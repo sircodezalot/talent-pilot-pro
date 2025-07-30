@@ -90,33 +90,35 @@ export const DashboardOverview = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-fade-in">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome to your interview management hub</p>
+        <div className="space-y-2">
+          <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">Dashboard</h1>
+          <p className="text-muted-foreground text-lg">Welcome to your interview management hub</p>
         </div>
-        <Button className="gap-2">
+        <Button className="gap-2 bg-gradient-primary hover:shadow-hover transition-all duration-300 hover:scale-105">
           <Plus className="h-4 w-4" />
           New Project
         </Button>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => {
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={stat.title}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                <Icon className="h-4 w-4 text-muted-foreground" />
+            <Card key={stat.title} className="bg-gradient-card shadow-card hover:shadow-hover transition-all duration-300 hover:scale-105 border-border/50" style={{ animationDelay: `${index * 100}ms` }}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
+                <div className="p-2 rounded-lg bg-gradient-primary/10">
+                  <Icon className="h-4 w-4 text-primary" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
+                <div className="text-3xl font-bold mb-2">{stat.value}</div>
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  <TrendingUp className="h-3 w-3" />
+                  <TrendingUp className="h-3 w-3 text-emerald-500" />
                   {stat.trend}
                 </p>
               </CardContent>
@@ -127,21 +129,27 @@ export const DashboardOverview = () => {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recent Projects */}
-        <Card>
+        <Card className="bg-gradient-card shadow-card border-border/50 animate-slide-up">
           <CardHeader>
-            <CardTitle>Recent Projects</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <FolderOpen className="h-5 w-5 text-primary" />
+              Recent Projects
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentProjects.map((project) => (
-                <div key={project.id} className="flex items-center justify-between p-3 rounded-lg border">
-                  <div className="space-y-1">
-                    <p className="font-medium">{project.name}</p>
+              {recentProjects.map((project, index) => (
+                <div key={project.id} className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-gradient-secondary/30 hover:bg-gradient-secondary/50 transition-all duration-300 hover:scale-[1.02] animate-scale-in" style={{ animationDelay: `${index * 150}ms` }}>
+                  <div className="space-y-2">
+                    <p className="font-semibold">{project.name}</p>
                     <p className="text-sm text-muted-foreground">{project.company}</p>
-                    <p className="text-xs text-muted-foreground">{project.candidates} candidates</p>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Users className="h-3 w-3" />
+                      {project.candidates} candidates
+                    </p>
                   </div>
-                  <div className="text-right space-y-1">
-                    <Badge variant={project.status === "Active" ? "default" : "secondary"}>
+                  <div className="text-right space-y-2">
+                    <Badge variant={project.status === "Active" ? "default" : "secondary"} className={project.status === "Active" ? "bg-gradient-primary shadow-elegant" : ""}>
                       {project.status}
                     </Badge>
                     <p className="text-xs text-muted-foreground">Ends: {project.endDate}</p>
@@ -153,20 +161,26 @@ export const DashboardOverview = () => {
         </Card>
 
         {/* Upcoming Interviews */}
-        <Card>
+        <Card className="bg-gradient-card shadow-card border-border/50 animate-slide-up" style={{ animationDelay: "200ms" }}>
           <CardHeader>
-            <CardTitle>Upcoming Interviews</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-primary" />
+              Upcoming Interviews
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {upcomingInterviews.map((interview) => (
-                <div key={interview.id} className="flex items-center justify-between p-3 rounded-lg border">
-                  <div className="space-y-1">
-                    <p className="font-medium">{interview.candidate}</p>
+              {upcomingInterviews.map((interview, index) => (
+                <div key={interview.id} className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-gradient-secondary/30 hover:bg-gradient-secondary/50 transition-all duration-300 hover:scale-[1.02] animate-scale-in" style={{ animationDelay: `${index * 150 + 300}ms` }}>
+                  <div className="space-y-2">
+                    <p className="font-semibold">{interview.candidate}</p>
                     <p className="text-sm text-muted-foreground">{interview.position}</p>
-                    <p className="text-xs text-muted-foreground">{interview.time}</p>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {interview.time}
+                    </p>
                   </div>
-                  <Badge variant={interview.status === "Confirmed" ? "default" : "secondary"}>
+                  <Badge variant={interview.status === "Confirmed" ? "default" : "secondary"} className={interview.status === "Confirmed" ? "bg-gradient-primary shadow-elegant" : ""}>
                     {interview.status}
                   </Badge>
                 </div>
