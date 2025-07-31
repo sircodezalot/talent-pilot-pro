@@ -57,8 +57,7 @@ interface Interview {
   candidateEmail: string;
   phone: string;
   project: string;
-  position: string;
-  scheduledDate: Date;
+  timelineDate: Date;
   status: InterviewStatus;
   score?: number;
   passmark: number;
@@ -72,9 +71,8 @@ const mockInterviews: Interview[] = [
     candidateName: "John Doe",
     candidateEmail: "john@example.com",
     phone: "+1234567890",
-    project: "Frontend Developer Hiring Q1",
-    position: "Senior Frontend Developer",
-    scheduledDate: new Date("2024-02-15T10:00:00"),
+    project: "Senior Frontend Developer Hiring Q1",
+    timelineDate: new Date("2024-02-15T10:00:00"),
     status: "Passed",
     score: 85,
     passmark: 70,
@@ -86,8 +84,7 @@ const mockInterviews: Interview[] = [
     candidateEmail: "jane@example.com",
     phone: "+1234567891",
     project: "Backend Developer Hiring Q1",
-    position: "Backend Developer",
-    scheduledDate: new Date("2024-02-16T14:00:00"),
+    timelineDate: new Date("2024-02-16T14:00:00"),
     status: "Failed",
     score: 45,
     passmark: 70,
@@ -99,8 +96,7 @@ const mockInterviews: Interview[] = [
     candidateEmail: "mike@example.com",
     phone: "+1234567892",
     project: "Full Stack Developer Hiring",
-    position: "Full Stack Developer",
-    scheduledDate: new Date("2024-02-17T09:00:00"),
+    timelineDate: new Date("2024-02-17T09:00:00"),
     status: "Pending",
     passmark: 75,
     duration: 90
@@ -110,9 +106,8 @@ const mockInterviews: Interview[] = [
     candidateName: "Sarah Wilson",
     candidateEmail: "sarah@example.com",
     phone: "+1234567893",
-    project: "Frontend Developer Hiring Q1",
-    position: "Junior Frontend Developer",
-    scheduledDate: new Date("2024-02-18T11:00:00"),
+    project: "Junior Frontend Developer Hiring Q1",
+    timelineDate: new Date("2024-02-18T11:00:00"),
     status: "Technical Failure",
     passmark: 60,
     duration: 60
@@ -123,8 +118,7 @@ const mockInterviews: Interview[] = [
     candidateEmail: "alex@example.com",
     phone: "+1234567894",
     project: "DevOps Engineer Hiring",
-    position: "DevOps Engineer",
-    scheduledDate: new Date("2024-02-19T15:00:00"),
+    timelineDate: new Date("2024-02-19T15:00:00"),
     status: "In Progress",
     passmark: 80,
     duration: 75
@@ -174,7 +168,7 @@ export const InterviewsPage = () => {
       const matchesSearch = 
         interview.candidateName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         interview.candidateEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        interview.position.toLowerCase().includes(searchTerm.toLowerCase());
+        interview.project.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesProject = selectedProject === "all" || interview.project === selectedProject;
       
@@ -186,8 +180,8 @@ export const InterviewsPage = () => {
         const scoreB = b.score || 0;
         return sortOrder === "desc" ? scoreB - scoreA : scoreA - scoreB;
       } else {
-        const dateA = a.scheduledDate.getTime();
-        const dateB = b.scheduledDate.getTime();
+        const dateA = a.timelineDate.getTime();
+        const dateB = b.timelineDate.getTime();
         return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
       }
     });
@@ -201,7 +195,7 @@ export const InterviewsPage = () => {
     if (rescheduleInterview && rescheduleDate) {
       setInterviews(interviews.map(interview => 
         interview.id === rescheduleInterview.id 
-          ? { ...interview, scheduledDate: rescheduleDate, status: "Pending" as InterviewStatus }
+          ? { ...interview, timelineDate: rescheduleDate, status: "Pending" as InterviewStatus }
           : interview
       ));
       setRescheduleInterview(null);
@@ -233,7 +227,7 @@ export const InterviewsPage = () => {
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search candidates, emails, or positions..."
+                placeholder="Search candidates, emails, or projects..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -299,8 +293,7 @@ export const InterviewsPage = () => {
                 <TableRow className="border-border/30 bg-muted/30 hover:bg-muted/40">
                   <TableHead className="font-semibold text-foreground/90 h-14">Candidate</TableHead>
                   <TableHead className="font-semibold text-foreground/90">Project</TableHead>
-                  <TableHead className="font-semibold text-foreground/90">Position</TableHead>
-                  <TableHead className="font-semibold text-foreground/90">Date & Time</TableHead>
+                  <TableHead className="font-semibold text-foreground/90">Timeline</TableHead>
                   <TableHead className="font-semibold text-foreground/90">Status</TableHead>
                   <TableHead className="font-semibold text-foreground/90 text-center">Score</TableHead>
                   <TableHead className="font-semibold text-foreground/90 text-center">Pass Mark</TableHead>
@@ -334,22 +327,19 @@ export const InterviewsPage = () => {
                       </div>
                     </TableCell>
                     <TableCell className="py-6">
-                      <p className="text-sm font-medium text-foreground/90">
-                        {interview.position}
-                      </p>
-                    </TableCell>
-                    <TableCell className="py-6">
-                      <div className="space-y-1">
-                        <p className="text-sm font-semibold text-foreground">
-                          {format(interview.scheduledDate, "MMM dd, yyyy")}
-                        </p>
-                        <p className="text-xs text-muted-foreground font-medium">
-                          {format(interview.scheduledDate, "hh:mm a")}
-                        </p>
-                        <div className="flex items-center gap-1">
-                          <div className="w-1.5 h-1.5 bg-primary/60 rounded-full"></div>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-primary/60 rounded-full"></div>
+                          <p className="text-sm font-semibold text-foreground">
+                            {format(interview.timelineDate, "MMM dd, yyyy")}
+                          </p>
+                        </div>
+                        <div className="ml-4 space-y-1">
+                          <p className="text-xs text-muted-foreground font-medium">
+                            Started: {format(interview.timelineDate, "hh:mm a")}
+                          </p>
                           <p className="text-xs text-muted-foreground">
-                            {interview.duration} mins
+                            Duration: {interview.duration} mins
                           </p>
                         </div>
                       </div>
