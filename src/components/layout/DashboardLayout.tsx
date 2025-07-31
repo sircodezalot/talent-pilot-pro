@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { InterviewsPage } from "@/components/interviews/InterviewsPage";
 import { 
   Users, 
   FolderOpen, 
@@ -107,7 +108,11 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
         {/* Page content */}
         <main className="p-6 lg:p-8">
-          {children}
+          {activeTab === "dashboard" && children}
+          {activeTab === "interviews" && <InterviewsPage />}
+          {activeTab === "projects" && <div>Projects page coming soon...</div>}
+          {activeTab === "users" && <div>Enterprise Users page coming soon...</div>}
+          {activeTab === "settings" && <div>Settings page coming soon...</div>}
         </main>
       </div>
     </div>
