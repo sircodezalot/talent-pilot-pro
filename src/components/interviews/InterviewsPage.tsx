@@ -280,90 +280,120 @@ export const InterviewsPage = () => {
       </Card>
 
       {/* Interviews Table */}
-      <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CalendarIcon className="h-5 w-5" />
-            All Interviews ({filteredInterviews.length})
+      <Card className="border-border/20 bg-card/80 backdrop-blur-lg shadow-elegant">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-3 text-xl">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <CalendarIcon className="h-5 w-5 text-primary" />
+            </div>
+            All Interviews 
+            <Badge variant="secondary" className="ml-2 bg-primary/10 text-primary border-primary/20">
+              {filteredInterviews.length}
+            </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="rounded-md border border-border/50">
+        <CardContent className="p-0">
+          <div className="overflow-hidden">
             <Table>
               <TableHeader>
-                <TableRow className="border-border/50">
-                  <TableHead>Candidate</TableHead>
-                  <TableHead>Project</TableHead>
-                  <TableHead>Position</TableHead>
-                  <TableHead>Date & Time</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>Pass Mark</TableHead>
-                  <TableHead>Actions</TableHead>
+                <TableRow className="border-border/30 bg-muted/30 hover:bg-muted/40">
+                  <TableHead className="font-semibold text-foreground/90 h-14">Candidate</TableHead>
+                  <TableHead className="font-semibold text-foreground/90">Project</TableHead>
+                  <TableHead className="font-semibold text-foreground/90">Position</TableHead>
+                  <TableHead className="font-semibold text-foreground/90">Date & Time</TableHead>
+                  <TableHead className="font-semibold text-foreground/90">Status</TableHead>
+                  <TableHead className="font-semibold text-foreground/90 text-center">Score</TableHead>
+                  <TableHead className="font-semibold text-foreground/90 text-center">Pass Mark</TableHead>
+                  <TableHead className="font-semibold text-foreground/90 text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredInterviews.map((interview) => (
-                  <TableRow key={interview.id} className="border-border/50">
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{interview.candidateName}</p>
-                        <p className="text-sm text-muted-foreground">{interview.candidateEmail}</p>
-                        <p className="text-xs text-muted-foreground">{interview.phone}</p>
+                  <TableRow 
+                    key={interview.id} 
+                    className="border-border/20 hover:bg-muted/20 transition-all duration-200 group animate-fade-in"
+                  >
+                    <TableCell className="py-6">
+                      <div className="space-y-1">
+                        <p className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                          {interview.candidateName}
+                        </p>
+                        <p className="text-sm text-muted-foreground flex items-center gap-1">
+                          {interview.candidateEmail}
+                        </p>
+                        <p className="text-xs text-muted-foreground/80 font-mono">
+                          {interview.phone}
+                        </p>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <p className="text-sm font-medium">{interview.project}</p>
+                    <TableCell className="py-6">
+                      <div className="px-3 py-1.5 bg-accent/30 rounded-md border border-accent/20">
+                        <p className="text-sm font-medium text-accent-foreground">
+                          {interview.project}
+                        </p>
+                      </div>
                     </TableCell>
-                    <TableCell>
-                      <p className="text-sm">{interview.position}</p>
+                    <TableCell className="py-6">
+                      <p className="text-sm font-medium text-foreground/90">
+                        {interview.position}
+                      </p>
                     </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="text-sm font-medium">
+                    <TableCell className="py-6">
+                      <div className="space-y-1">
+                        <p className="text-sm font-semibold text-foreground">
                           {format(interview.scheduledDate, "MMM dd, yyyy")}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground font-medium">
                           {format(interview.scheduledDate, "hh:mm a")}
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          {interview.duration} mins
-                        </p>
+                        <div className="flex items-center gap-1">
+                          <div className="w-1.5 h-1.5 bg-primary/60 rounded-full"></div>
+                          <p className="text-xs text-muted-foreground">
+                            {interview.duration} mins
+                          </p>
+                        </div>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <Badge variant={getStatusBadgeVariant(interview.status)}>
+                    <TableCell className="py-6">
+                      <Badge 
+                        variant={getStatusBadgeVariant(interview.status)}
+                        className="font-medium px-3 py-1.5 shadow-sm"
+                      >
                         {interview.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-6 text-center">
                       {interview.score !== undefined ? (
-                        <span className={cn(
-                          "font-medium",
-                          interview.score >= interview.passmark 
-                            ? "text-emerald-600" 
-                            : "text-red-600"
-                        )}>
-                          {interview.score}%
-                        </span>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className={cn(
+                            "text-lg font-bold px-3 py-1 rounded-lg",
+                            interview.score >= interview.passmark 
+                              ? "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30" 
+                              : "text-red-600 bg-red-50 dark:bg-red-950/30"
+                          )}>
+                            {interview.score}%
+                          </span>
+                        </div>
                       ) : (
-                        <span className="text-muted-foreground">-</span>
+                        <span className="text-muted-foreground text-lg font-medium">-</span>
                       )}
                     </TableCell>
-                    <TableCell>
-                      <span className="text-sm text-muted-foreground">
-                        {interview.passmark}%
-                      </span>
+                    <TableCell className="py-6 text-center">
+                      <div className="px-2 py-1 bg-muted/50 rounded-md border">
+                        <span className="text-sm font-medium text-muted-foreground">
+                          {interview.passmark}%
+                        </span>
+                      </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-6 text-center">
                       {canReschedule(interview.status) && (
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleReschedule(interview)}
-                          className="flex items-center gap-1"
+                          className="flex items-center gap-2 hover:bg-primary/10 hover:border-primary/30 transition-all duration-200 hover-scale"
                         >
-                          <RotateCcw className="h-3 w-3" />
+                          <RotateCcw className="h-3.5 w-3.5" />
                           Reschedule
                         </Button>
                       )}
