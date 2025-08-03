@@ -38,6 +38,7 @@ import {
   ArrowUpDown,
   RotateCcw
 } from "lucide-react";
+import { ScheduleInterviewForm } from "./ScheduleInterviewForm";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -218,6 +219,7 @@ export const InterviewsPage = () => {
         <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
           Interviews
         </h1>
+        <ScheduleInterviewForm onSchedule={(data) => console.log('New interview scheduled:', data)} />
       </div>
 
       {/* Search and Filter Bar */}
