@@ -43,8 +43,8 @@ const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
+  resume: z.any().refine((file) => file, "Resume is required"),
   phone: z.string().optional(),
-  resume: z.any().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -120,9 +120,15 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
   };
 
   const onSubmit = (data: FormData) => {
+    // Check if resume file is selected since it's required
+    if (!selectedFile) {
+      form.setError("resume", { message: "Resume is required" });
+      return;
+    }
+
     const scheduleData = {
       ...data,
-      resumeFile: selectedFile || undefined,
+      resumeFile: selectedFile,
     };
     
     onSchedule?.(scheduleData);
@@ -157,15 +163,15 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
           Schedule Interview
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="bg-gradient-to-r from-primary/10 to-primary/5 -m-6 p-6 mb-6 rounded-t-lg">
           <div className="flex items-center justify-between">
-            <DialogTitle>Schedule New Interview</DialogTitle>
+            <DialogTitle className="text-xl font-semibold text-primary">Schedule New Interview</DialogTitle>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleClose}
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 hover:bg-primary/10"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -173,14 +179,14 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Project Name - Searchable Dropdown */}
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Project Name - Full Width */}
             <FormField
               control={form.control}
               name="projectName"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Project Name</FormLabel>
+                <FormItem className="flex flex-col col-span-2">
+                  <FormLabel className="text-primary font-medium">Project Name</FormLabel>
                   <Popover open={projectOpen} onOpenChange={setProjectOpen}>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -188,7 +194,7 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                           variant="outline"
                           role="combobox"
                           aria-expanded={projectOpen}
-                          className="justify-between"
+                          className="justify-between hover:bg-primary/5 border-primary/20"
                         >
                           {field.value || "Select project..."}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -229,35 +235,45 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
               )}
             />
 
-            {/* First Name */}
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter first name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              {/* First Name */}
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-primary font-medium">First Name</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Enter first name" 
+                        {...field} 
+                        className="border-primary/20 focus:border-primary"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Last Name */}
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter last name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Last Name */}
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-primary font-medium">Last Name</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Enter last name" 
+                        {...field} 
+                        className="border-primary/20 focus:border-primary"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             {/* Email */}
             <FormField
@@ -265,9 +281,70 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-primary font-medium">Email Address</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter email address" type="email" {...field} />
+                    <Input 
+                      placeholder="Enter email address" 
+                      type="email" 
+                      {...field} 
+                      className="border-primary/20 focus:border-primary"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Resume Upload */}
+            <FormField
+              control={form.control}
+              name="resume"
+              render={() => (
+                <FormItem>
+                  <FormLabel className="text-primary font-medium">Resume</FormLabel>
+                  <FormControl>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="default"
+                          onClick={() => document.getElementById('resume-upload')?.click()}
+                          className="flex items-center gap-2 bg-primary/5 border-primary/30 hover:bg-primary/10 text-primary"
+                        >
+                          <Upload className="h-4 w-4" />
+                          {selectedFile ? 'Change Resume' : 'Upload Resume'}
+                        </Button>
+                        <input
+                          id="resume-upload"
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={handleFileSelect}
+                          className="hidden"
+                        />
+                        <span className="text-sm text-muted-foreground">PDF, DOC, DOCX (max 10MB)</span>
+                      </div>
+                      
+                      {selectedFile && (
+                        <div className="flex items-center justify-between p-3 bg-primary/5 border border-primary/20 rounded-md">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-primary rounded-full"></div>
+                            <span className="text-sm font-medium text-primary">
+                              {selectedFile.name}
+                            </span>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={removeFile}
+                            className="h-6 w-6 p-0 hover:bg-destructive/10 hover:text-destructive"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -280,63 +357,20 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone Number (Optional)</FormLabel>
+                  <FormLabel className="text-primary font-medium">Phone Number <span className="text-muted-foreground">(Optional)</span></FormLabel>
                   <FormControl>
                     <PhoneInput
                       placeholder="Enter phone number"
                       value={field.value}
                       onChange={field.onChange}
                       defaultCountry="US"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex h-10 w-full rounded-md border border-primary/20 bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            {/* Resume Upload */}
-            <div className="space-y-2">
-              <FormLabel>Resume (Optional)</FormLabel>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => document.getElementById('resume-upload')?.click()}
-                    className="flex items-center gap-2"
-                  >
-                    <Upload className="h-4 w-4" />
-                    Upload Resume
-                  </Button>
-                  <input
-                    id="resume-upload"
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                  />
-                </div>
-                
-                {selectedFile && (
-                  <div className="flex items-center justify-between p-2 bg-muted rounded-md">
-                    <span className="text-sm text-muted-foreground">
-                      {selectedFile.name}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={removeFile}
-                      className="h-6 w-6 p-0"
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
 
             {/* Form Actions */}
             <div className="flex gap-2 pt-4">
