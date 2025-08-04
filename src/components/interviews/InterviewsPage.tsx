@@ -31,6 +31,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { 
   Search, 
   Filter, 
@@ -159,6 +168,8 @@ export const InterviewsPage = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [rescheduleDate, setRescheduleDate] = useState<Date>();
   const [rescheduleInterview, setRescheduleInterview] = useState<Interview | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   // Get unique projects for filter
   const projects = Array.from(new Set(interviews.map(i => i.project)));
@@ -186,6 +197,24 @@ export const InterviewsPage = () => {
         return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
       }
     });
+
+  // Pagination logic
+  const totalItems = filteredInterviews.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedInterviews = filteredInterviews.slice(startIndex, endIndex);
+
+  // Reset to first page when search/filter changes
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleProjectChange = (value: string) => {
+    setSelectedProject(value);
+    setCurrentPage(1);
+  };
 
   const handleReschedule = (interview: Interview) => {
     setRescheduleInterview(interview);
@@ -231,12 +260,12 @@ export const InterviewsPage = () => {
               <Input
                 placeholder="Search candidates, emails, or projects..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => handleSearch(e.target.value)}
                 className="pl-10"
               />
             </div>
             
-            <Select value={selectedProject} onValueChange={setSelectedProject}>
+            <Select value={selectedProject} onValueChange={handleProjectChange}>
               <SelectTrigger className="w-full md:w-64">
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="Filter by project" />
@@ -303,7 +332,7 @@ export const InterviewsPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredInterviews.map((interview) => (
+                {paginatedInterviews.map((interview) => (
                   <TableRow 
                     key={interview.id} 
                     className="border-border/20 hover:bg-muted/20 transition-all duration-200 group animate-fade-in"
@@ -397,6 +426,77 @@ export const InterviewsPage = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  className={cn(
+                    "cursor-pointer",
+                    currentPage === 1 && "pointer-events-none opacity-50"
+                  )}
+                />
+              </PaginationItem>
+              
+              {/* Page numbers */}
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                let pageNumber;
+                if (totalPages <= 5) {
+                  pageNumber = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNumber = i + 1;
+                } else if (currentPage > totalPages - 3) {
+                  pageNumber = totalPages - 4 + i;
+                } else {
+                  pageNumber = currentPage - 2 + i;
+                }
+                
+                return (
+                  <PaginationItem key={pageNumber}>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(pageNumber)}
+                      isActive={currentPage === pageNumber}
+                      className="cursor-pointer"
+                    >
+                      {pageNumber}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+              
+              {totalPages > 5 && currentPage < totalPages - 2 && (
+                <>
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(totalPages)}
+                      className="cursor-pointer"
+                    >
+                      {totalPages}
+                    </PaginationLink>
+                  </PaginationItem>
+                </>
+              )}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  className={cn(
+                    "cursor-pointer",
+                    currentPage === totalPages && "pointer-events-none opacity-50"
+                  )}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
 
       {/* Reschedule Dialog */}
       <Dialog 
