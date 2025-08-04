@@ -33,8 +33,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Check, ChevronsUpDown, Upload, X, RotateCcw } from "lucide-react";
+import { Plus, Check, ChevronsUpDown, Upload, X, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Checkbox } from "@/components/ui/checkbox";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
@@ -45,6 +47,7 @@ const formSchema = z.object({
   email: z.string().email("Invalid email address"),
   resume: z.any().refine((file) => file, "Resume is required"),
   phone: z.string().optional(),
+  notifyOnExpiration: z.boolean().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -69,6 +72,7 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
   const [open, setOpen] = useState(false);
   const [projectOpen, setProjectOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -179,64 +183,86 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Project Name - Full Width */}
-            <FormField
-              control={form.control}
-              name="projectName"
-              render={({ field }) => (
-                <FormItem className="flex flex-col col-span-2">
-                  <FormLabel className="text-primary font-medium">Project Name</FormLabel>
-                  <Popover open={projectOpen} onOpenChange={setProjectOpen}>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={projectOpen}
-                          className="justify-between hover:bg-primary/5 border-primary/20"
-                        >
-                          {field.value || "Select project..."}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandInput placeholder="Search projects..." />
-                        <CommandList>
-                          <CommandEmpty>No project found.</CommandEmpty>
-                          <CommandGroup>
-                            {projects.map((project) => (
-                              <CommandItem
-                                key={project}
-                                value={project}
-                                onSelect={() => {
-                                  field.onChange(project);
-                                  setProjectOpen(false);
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    field.value === project ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                                {project}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            {/* Project Name and Email in same row */}
             <div className="grid grid-cols-2 gap-4">
-              {/* First Name */}
+              <FormField
+                control={form.control}
+                name="projectName"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel className="text-primary font-medium">Project Name</FormLabel>
+                    <Popover open={projectOpen} onOpenChange={setProjectOpen}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={projectOpen}
+                            className="justify-between hover:bg-primary/5 border-primary/20"
+                          >
+                            {field.value || "Select project..."}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandInput placeholder="Search projects..." />
+                          <CommandList>
+                            <CommandEmpty>No project found.</CommandEmpty>
+                            <CommandGroup>
+                              {projects.map((project) => (
+                                <CommandItem
+                                  key={project}
+                                  value={project}
+                                  onSelect={() => {
+                                    field.onChange(project);
+                                    setProjectOpen(false);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      field.value === project ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  {project}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Email */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-primary font-medium">Email Address</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Enter email address" 
+                        type="email" 
+                        {...field} 
+                        className="border-primary/20 focus:border-primary"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* First Name and Last Name */}
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="firstName"
@@ -255,7 +281,6 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                 )}
               />
 
-              {/* Last Name */}
               <FormField
                 control={form.control}
                 name="lastName"
@@ -274,26 +299,6 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                 )}
               />
             </div>
-
-            {/* Email */}
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-primary font-medium">Email Address</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Enter email address" 
-                      type="email" 
-                      {...field} 
-                      className="border-primary/20 focus:border-primary"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             {/* Resume Upload */}
             <FormField
@@ -372,8 +377,53 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
               )}
             />
 
+            {/* Advanced Configurations */}
+            <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="flex items-center justify-between w-full p-0 h-auto font-medium text-primary hover:bg-transparent"
+                >
+                  <span>Advanced Configurations</span>
+                  {advancedOpen ? (
+                    <ChevronUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-4 pt-4">
+                <div className="border-l-2 border-primary/20 pl-4 space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="notifyOnExpiration"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="border-primary/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-sm font-medium text-foreground">
+                            Notify candidate when invite link is nearing expiration
+                          </FormLabel>
+                          <p className="text-xs text-muted-foreground">
+                            Send an email reminder to the candidate 24 hours before the interview link expires
+                          </p>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
             {/* Form Actions */}
-            <div className="flex gap-2 pt-4">
+            <div className="flex gap-2 pt-4 border-t border-border">
               <Button
                 type="button"
                 variant="outline"
