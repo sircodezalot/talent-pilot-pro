@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -52,17 +52,19 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-// Mock project data
-const projects = [
-  "Senior Frontend Developer Hiring Q1",
-  "Backend Developer Hiring Q1", 
-  "Full Stack Developer Hiring",
-  "Junior Frontend Developer Hiring Q1",
-  "DevOps Engineer Hiring",
-  "Data Scientist Hiring Q2",
-  "Mobile App Developer Hiring",
-  "UI/UX Designer Hiring Q1"
-];
+// Mock project data with dates for sorting
+const allProjects = [
+  { name: "Senior Frontend Developer Hiring Q1", lastActivity: new Date("2024-01-15") },
+  { name: "Backend Developer Hiring Q1", lastActivity: new Date("2024-01-10") }, 
+  { name: "Full Stack Developer Hiring", lastActivity: new Date("2024-01-08") },
+  { name: "Junior Frontend Developer Hiring Q1", lastActivity: new Date("2024-01-05") },
+  { name: "DevOps Engineer Hiring", lastActivity: new Date("2024-01-03") },
+  { name: "Data Scientist Hiring Q2", lastActivity: new Date("2023-12-28") },
+  { name: "Mobile App Developer Hiring", lastActivity: new Date("2023-12-25") },
+  { name: "UI/UX Designer Hiring Q1", lastActivity: new Date("2023-12-20") },
+  { name: "Product Manager Hiring Q2", lastActivity: new Date("2023-12-15") },
+  { name: "QA Engineer Hiring", lastActivity: new Date("2023-12-10") },
+].sort((a, b) => b.lastActivity.getTime() - a.lastActivity.getTime());
 
 interface ScheduleInterviewFormProps {
   onSchedule?: (data: FormData & { resumeFile?: File }) => void;
@@ -73,7 +75,19 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
   const [projectOpen, setProjectOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [projectSearch, setProjectSearch] = useState("");
   const { toast } = useToast();
+
+  // Filter projects based on search or show latest 5 by default
+  const filteredProjects = useMemo(() => {
+    if (projectSearch.trim()) {
+      return allProjects.filter(project => 
+        project.name.toLowerCase().includes(projectSearch.toLowerCase())
+      );
+    }
+    // Show latest 5 projects by default
+    return allProjects.slice(0, 5);
+  }, [projectSearch]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -206,34 +220,56 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-full p-0">
-                        <Command>
-                          <CommandInput placeholder="Search projects..." />
-                          <CommandList>
-                            <CommandEmpty>No project found.</CommandEmpty>
-                            <CommandGroup>
-                              {projects.map((project) => (
-                                <CommandItem
-                                  key={project}
-                                  value={project}
-                                  onSelect={() => {
-                                    field.onChange(project);
-                                    setProjectOpen(false);
-                                  }}
-                                >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      field.value === project ? "opacity-100" : "opacity-0"
-                                    )}
-                                  />
-                                  {project}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
+                       <PopoverContent className="w-full p-0 bg-popover border border-border shadow-lg">
+                         <Command>
+                           <CommandInput 
+                             placeholder="Search projects..." 
+                             value={projectSearch}
+                             onValueChange={setProjectSearch}
+                           />
+                           <CommandList>
+                             <CommandEmpty>
+                               {projectSearch ? "No projects match your search." : "No projects available."}
+                             </CommandEmpty>
+                             <CommandGroup>
+                               {!projectSearch && (
+                                 <div className="px-2 py-1.5 text-xs text-muted-foreground border-b border-border">
+                                   Latest 5 projects
+                                 </div>
+                               )}
+                               {filteredProjects.map((project) => (
+                                 <CommandItem
+                                   key={project.name}
+                                   value={project.name}
+                                   onSelect={() => {
+                                     field.onChange(project.name);
+                                     setProjectOpen(false);
+                                     setProjectSearch("");
+                                   }}
+                                 >
+                                   <Check
+                                     className={cn(
+                                       "mr-2 h-4 w-4",
+                                       field.value === project.name ? "opacity-100" : "opacity-0"
+                                     )}
+                                   />
+                                   <div className="flex flex-col">
+                                     <span>{project.name}</span>
+                                     <span className="text-xs text-muted-foreground">
+                                       Last activity: {project.lastActivity.toLocaleDateString()}
+                                     </span>
+                                   </div>
+                                 </CommandItem>
+                               ))}
+                               {projectSearch && filteredProjects.length > 0 && (
+                                 <div className="px-2 py-1.5 text-xs text-muted-foreground border-t border-border">
+                                   {filteredProjects.length} result{filteredProjects.length === 1 ? '' : 's'} found
+                                 </div>
+                               )}
+                             </CommandGroup>
+                           </CommandList>
+                         </Command>
+                       </PopoverContent>
                     </Popover>
                     <FormMessage />
                   </FormItem>
