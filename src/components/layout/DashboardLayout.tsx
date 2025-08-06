@@ -3,13 +3,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InterviewsPage } from "@/components/interviews/InterviewsPage";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Users,
   FolderOpen,
   Calendar,
   Settings,
   LogOut,
   Menu,
-  X
+  X,
+  User,
+  ChevronRight
 } from "lucide-react";
 
 interface DashboardLayoutProps {
@@ -23,6 +30,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   const userName = "John Doe";
   const profileImage = "";
+  const userRoles = ["Admin", "HR Manager", "Interview Coordinator"];
 
   const navigation = [
     { id: "dashboard", name: "Dashboard", icon: FolderOpen },
@@ -183,6 +191,67 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             )}
           </div>
 
+          {/* Profile Button */}
+          <div className={`mb-2 ${sidebarHovered ? "" : "mx-1"}`}>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" className={`w-full justify-start ${sidebarHovered ? "" : "p-3"}`}>
+                  <User className={`h-4 w-4`} />
+                  <span className={`ml-3 transition-opacity duration-200 ease-in-out ${sidebarHovered ? "opacity-100" : "opacity-0"}`}>
+                    Profile
+                  </span>
+                  {sidebarHovered && <ChevronRight className="ml-auto h-4 w-4" />}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent side="right" className="w-80 bg-popover border border-border shadow-lg backdrop-blur-xl">
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    {profileImage ? (
+                      <img
+                        src={profileImage}
+                        alt="Profile"
+                        className="h-12 w-12 rounded-full object-cover border border-border"
+                      />
+                    ) : (
+                      <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center border border-border text-lg font-semibold text-primary">
+                        {getInitials(userName)}
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="font-semibold text-foreground">{userName}</h3>
+                      <p className="text-sm text-muted-foreground">Administrator</p>
+                    </div>
+                  </div>
+                  
+                  <div className="border-t border-border pt-3">
+                    <h4 className="text-sm font-medium text-foreground mb-2">Switch Role</h4>
+                    <div className="space-y-1">
+                      {userRoles.map((role) => (
+                        <Button
+                          key={role}
+                          variant="ghost"
+                          className="w-full justify-start text-left h-auto py-2 px-3 hover:bg-muted/60"
+                          onClick={() => {
+                            // Role switching logic would go here
+                            console.log(`Switching to role: ${role}`);
+                          }}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-sm">{role}</span>
+                            {role === "Admin" && (
+                              <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">Current</span>
+                            )}
+                          </div>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Sign Out Button */}
           <div className={`${sidebarHovered ? "" : "mx-1"}`}>
             <Button variant="outline" className={`w-full justify-start ${sidebarHovered ? "" : "p-3"}`}>
               <LogOut className={`h-4 w-4`} />
