@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,12 +12,13 @@ import {
   TableRow
 } from "@/components/ui/table";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   Dialog,
   DialogContent,
@@ -45,7 +46,9 @@ import {
   Filter,
   Calendar as CalendarIcon,
   ArrowUpDown,
-  RotateCcw
+  RotateCcw,
+  Check,
+  ChevronsUpDown
 } from "lucide-react";
 import { ScheduleInterviewForm } from "./ScheduleInterviewForm";
 import { format } from "date-fns";
@@ -360,6 +363,8 @@ export const InterviewsPage = () => {
   const [interviews, setInterviews] = useState<Interview[]>(mockInterviews);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProject, setSelectedProject] = useState<string>("all");
+  const [projectSearch, setProjectSearch] = useState("");
+  const [projectOpen, setProjectOpen] = useState(false);
   const [sortBy, setSortBy] = useState<"date" | "score">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [rescheduleDate, setRescheduleDate] = useState<Date>();
@@ -367,8 +372,38 @@ export const InterviewsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  // Get unique projects for filter
-  const projects = Array.from(new Set(interviews.map(i => i.project)));
+  // Get unique projects with activity data for sorting
+  const allProjects = useMemo(() => {
+    const projectCounts = interviews.reduce((acc, interview) => {
+      if (!acc[interview.project]) {
+        acc[interview.project] = {
+          name: interview.project,
+          count: 0,
+          lastActivity: interview.timelineDate
+        };
+      }
+      acc[interview.project].count++;
+      if (interview.timelineDate > acc[interview.project].lastActivity) {
+        acc[interview.project].lastActivity = interview.timelineDate;
+      }
+      return acc;
+    }, {} as Record<string, { name: string; count: number; lastActivity: Date }>);
+
+    return Object.values(projectCounts).sort((a, b) => 
+      b.lastActivity.getTime() - a.lastActivity.getTime()
+    );
+  }, [interviews]);
+
+  // Filter projects based on search or show latest 5 by default
+  const filteredProjects = useMemo(() => {
+    if (projectSearch.trim()) {
+      return allProjects.filter(project => 
+        project.name.toLowerCase().includes(projectSearch.toLowerCase())
+      );
+    }
+    // Show latest 5 projects by default
+    return allProjects.slice(0, 5);
+  }, [allProjects, projectSearch]);
 
   // Filter and sort interviews
   const filteredInterviews = interviews
@@ -461,20 +496,88 @@ export const InterviewsPage = () => {
               />
             </div>
 
-            <Select value={selectedProject} onValueChange={handleProjectChange}>
-              <SelectTrigger className="w-full md:w-64">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Filter by project" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Projects</SelectItem>
-                {projects.map(project => (
-                  <SelectItem key={project} value={project}>
-                    {project}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Popover open={projectOpen} onOpenChange={setProjectOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={projectOpen}
+                  className="w-full md:w-64 justify-between"
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  {selectedProject === "all" ? "All Projects" : selectedProject}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-0 bg-popover border border-border shadow-lg">
+                <Command>
+                  <CommandInput 
+                    placeholder="Search projects..." 
+                    value={projectSearch}
+                    onValueChange={setProjectSearch}
+                  />
+                  <CommandList>
+                    <CommandEmpty>
+                      {projectSearch ? "No projects match your search." : "No projects available."}
+                    </CommandEmpty>
+                    <CommandGroup>
+                      <CommandItem
+                        value="all"
+                        onSelect={() => {
+                          setSelectedProject("all");
+                          setProjectOpen(false);
+                          setProjectSearch("");
+                          setCurrentPage(1);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedProject === "all" ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        All Projects
+                      </CommandItem>
+                      {!projectSearch && (
+                        <div className="px-2 py-1.5 text-xs text-muted-foreground border-t border-border">
+                          Latest 5 projects
+                        </div>
+                      )}
+                      {filteredProjects.map((project) => (
+                        <CommandItem
+                          key={project.name}
+                          value={project.name}
+                          onSelect={() => {
+                            setSelectedProject(project.name);
+                            setProjectOpen(false);
+                            setProjectSearch("");
+                            setCurrentPage(1);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedProject === project.name ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          <div className="flex flex-col">
+                            <span>{project.name}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {project.count} interview{project.count === 1 ? '' : 's'} • Last: {project.lastActivity.toLocaleDateString()}
+                            </span>
+                          </div>
+                        </CommandItem>
+                      ))}
+                      {projectSearch && filteredProjects.length > 0 && (
+                        <div className="px-2 py-1.5 text-xs text-muted-foreground border-t border-border">
+                          {filteredProjects.length} result{filteredProjects.length === 1 ? '' : 's'} found
+                        </div>
+                      )}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
 
             <div className="flex gap-2">
               <Button
