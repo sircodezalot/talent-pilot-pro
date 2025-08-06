@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from "@/components/ui/table";
 import {
   Select,
@@ -40,10 +40,10 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { 
-  Search, 
-  Filter, 
-  Calendar as CalendarIcon, 
+import {
+  Search,
+  Filter,
+  Calendar as CalendarIcon,
   ArrowUpDown,
   RotateCcw
 } from "lucide-react";
@@ -51,14 +51,14 @@ import { ScheduleInterviewForm } from "./ScheduleInterviewForm";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
-type InterviewStatus = 
-  | "Pending" 
-  | "No Show" 
-  | "Forfeited" 
-  | "Terminated" 
-  | "Passed" 
-  | "Failed" 
-  | "Technical Failure" 
+type InterviewStatus =
+  | "Pending"
+  | "No Show"
+  | "Forfeited"
+  | "Terminated"
+  | "Passed"
+  | "Failed"
+  | "Technical Failure"
   | "In Progress";
 
 interface Interview {
@@ -373,13 +373,13 @@ export const InterviewsPage = () => {
   // Filter and sort interviews
   const filteredInterviews = interviews
     .filter(interview => {
-      const matchesSearch = 
+      const matchesSearch =
         interview.candidateName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         interview.candidateEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
         interview.project.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       const matchesProject = selectedProject === "all" || interview.project === selectedProject;
-      
+
       return matchesSearch && matchesProject;
     })
     .sort((a, b) => {
@@ -419,8 +419,8 @@ export const InterviewsPage = () => {
 
   const confirmReschedule = () => {
     if (rescheduleInterview && rescheduleDate) {
-      setInterviews(interviews.map(interview => 
-        interview.id === rescheduleInterview.id 
+      setInterviews(interviews.map(interview =>
+        interview.id === rescheduleInterview.id
           ? { ...interview, timelineDate: rescheduleDate, status: "Pending" as InterviewStatus }
           : interview
       ));
@@ -439,8 +439,8 @@ export const InterviewsPage = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-3">
+      <div className="flex items-center justify-between mt-8">
         <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
           Interviews
         </h1>
@@ -449,7 +449,7 @@ export const InterviewsPage = () => {
 
       {/* Search and Filter Bar */}
       <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-        <CardContent className="pt-6">
+        <CardContent className="!p-3">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -460,7 +460,7 @@ export const InterviewsPage = () => {
                 className="pl-10"
               />
             </div>
-            
+
             <Select value={selectedProject} onValueChange={handleProjectChange}>
               <SelectTrigger className="w-full md:w-64">
                 <Filter className="h-4 w-4 mr-2" />
@@ -486,7 +486,7 @@ export const InterviewsPage = () => {
                 Date
                 <ArrowUpDown className="h-4 w-4" />
               </Button>
-              
+
               <Button
                 variant="outline"
                 onClick={() => toggleSort("score")}
@@ -502,39 +502,43 @@ export const InterviewsPage = () => {
 
       {/* Interviews Table */}
       <Card className="border-border/20 bg-card/80 backdrop-blur-lg shadow-elegant">
-        <CardHeader className="pb-4">
+        <CardHeader className="pb-4 pt-4">
           <CardTitle className="flex items-center gap-3 text-xl">
             <div className="p-2 bg-primary/10 rounded-lg">
               <CalendarIcon className="h-5 w-5 text-primary" />
             </div>
-            All Interviews 
+            All Interviews
             <Badge variant="secondary" className="ml-2 bg-primary/10 text-primary border-primary/20">
               {filteredInterviews.length}
             </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-hidden">
+          <div className="px-2">
             <Table>
               <TableHeader>
                 <TableRow className="border-border/30 bg-muted/30 hover:bg-muted/40">
                   <TableHead className="font-semibold text-foreground/90 h-14">Candidate</TableHead>
-                  <TableHead className="font-semibold text-foreground/90">Project</TableHead>
-                  <TableHead className="font-semibold text-foreground/90">Timeline</TableHead>
-                  <TableHead className="font-semibold text-foreground/90">Status</TableHead>
+                  <TableHead className="font-semibold text-foreground/90 px-8">Project</TableHead>
+                  <TableHead className="font-semibold text-foreground/90 px-8">Timeline</TableHead>
+                  <TableHead className="font-semibold text-foreground/90 ">Status</TableHead>
                   <TableHead className="font-semibold text-foreground/90 text-center">Score</TableHead>
                   <TableHead className="font-semibold text-foreground/90 text-center">Pass Mark</TableHead>
                   <TableHead className="font-semibold text-foreground/90 text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
+            </Table>
+          </div>
+          <div className="px-2 overflow-y-scroll h-[calc(100vh-360px)] lg:h-[calc(100vh-390px)]">
+            <Table>
               <TableBody>
                 {paginatedInterviews.map((interview) => (
-                  <TableRow 
-                    key={interview.id} 
+                  <TableRow
+                    key={interview.id}
                     className="border-border/20 hover:bg-muted/20 transition-all duration-200 group animate-fade-in"
                   >
-                    <TableCell className="py-6">
-                      <div className="space-y-1">
+                    <TableCell className="py-3">
+                      <div className="space-y-0">
                         <p className="font-semibold text-foreground group-hover:text-primary transition-colors">
                           {interview.candidateName}
                         </p>
@@ -546,22 +550,22 @@ export const InterviewsPage = () => {
                         </p>
                       </div>
                     </TableCell>
-                    <TableCell className="py-6">
+                    <TableCell className="py-3">
                       <div className="px-3 py-1.5 bg-accent/30 rounded-md border border-accent/20">
                         <p className="text-sm font-medium text-accent-foreground">
                           {interview.project}
                         </p>
                       </div>
                     </TableCell>
-                    <TableCell className="py-6">
-                      <div className="space-y-2">
+                    <TableCell className="py-3">
+                      <div className="space-y-0">
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-primary/60 rounded-full"></div>
                           <p className="text-sm font-semibold text-foreground">
                             {format(interview.timelineDate, "MMM dd, yyyy")}
                           </p>
                         </div>
-                        <div className="ml-4 space-y-1">
+                        <div className="ml-4 space-y-0">
                           <p className="text-xs text-muted-foreground font-medium">
                             Started: {format(interview.timelineDate, "hh:mm a")}
                           </p>
@@ -571,21 +575,23 @@ export const InterviewsPage = () => {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="py-6">
-                      <Badge 
-                        variant={getStatusBadgeVariant(interview.status)}
-                        className="font-medium px-3 py-1.5 shadow-sm"
-                      >
-                        {interview.status}
-                      </Badge>
+                    <TableCell className="py-3">
+                      <div className="flex items-center">
+                        <Badge
+                          variant={getStatusBadgeVariant(interview.status)}
+                          className="font-medium px-3 py-1.5 shadow-sm"
+                        >
+                          {interview.status}
+                        </Badge>
+                      </div>
                     </TableCell>
-                    <TableCell className="py-6 text-center">
+                    <TableCell className="py-3 text-center">
                       {interview.score !== undefined ? (
                         <div className="flex flex-col items-center gap-1">
                           <span className={cn(
-                            "text-lg font-bold px-3 py-1 rounded-lg",
-                            interview.score >= interview.passmark 
-                              ? "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30" 
+                            "text-lg font-semibold px-3 py-1 rounded-lg",
+                            interview.score >= interview.passmark
+                              ? "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30"
                               : "text-red-600 bg-red-50 dark:bg-red-950/30"
                           )}>
                             {interview.score}%
@@ -595,25 +601,27 @@ export const InterviewsPage = () => {
                         <span className="text-muted-foreground text-lg font-medium">-</span>
                       )}
                     </TableCell>
-                    <TableCell className="py-6 text-center">
-                      <div className="px-2 py-1 bg-muted/50 rounded-md border">
+                    <TableCell className="py-3 text-center">
+                      <div className="px-1 py-1 bg-muted/50 rounded-md border">
                         <span className="text-sm font-medium text-muted-foreground">
                           {interview.passmark}%
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="py-6 text-center">
-                      {canReschedule(interview.status) && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleReschedule(interview)}
-                          className="flex items-center gap-2 hover:bg-primary/10 hover:border-primary/30 transition-all duration-200 hover-scale"
-                        >
-                          <RotateCcw className="h-3.5 w-3.5" />
-                          Reschedule
-                        </Button>
-                      )}
+                    <TableCell className="py-3 text-center">
+                      <div className="flex justify-center items-center">
+                        {canReschedule(interview.status) && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleReschedule(interview)}
+                            className="flex items-center gap-2 hover:bg-primary/10 hover:border-primary/30 transition-all duration-200 hover-scale"
+                          >
+                            <RotateCcw className="h-3.5 w-3.5" />
+                            Reschedule
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -625,21 +633,21 @@ export const InterviewsPage = () => {
 
       {/* Pagination Footer */}
       {totalPages > 1 && (
-        <Card className="border-border/30 bg-card/30 backdrop-blur-sm">
-          <CardContent className="py-4">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <Card className="border-none bg-card/30 backdrop-blur-sm">
+          <CardContent className="py-3">
+            <div className="flex items-center justify-between gap-4">
               {/* Results info */}
-              <div className="text-sm text-muted-foreground">
+              <div className="w-1/2 text-sm text-muted-foreground">
                 Showing <span className="font-medium text-foreground">{startIndex + 1}</span> to{" "}
                 <span className="font-medium text-foreground">{Math.min(endIndex, totalItems)}</span> of{" "}
                 <span className="font-medium text-foreground">{totalItems}</span> results
               </div>
-              
+
               {/* Pagination controls */}
-              <Pagination>
+              <Pagination className="!w-1/2 flex items-center justify-end">
                 <PaginationContent>
                   <PaginationItem>
-                    <PaginationPrevious 
+                    <PaginationPrevious
                       onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                       className={cn(
                         "cursor-pointer",
@@ -647,7 +655,7 @@ export const InterviewsPage = () => {
                       )}
                     />
                   </PaginationItem>
-                  
+
                   {/* Page numbers */}
                   {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                     let pageNumber;
@@ -660,7 +668,7 @@ export const InterviewsPage = () => {
                     } else {
                       pageNumber = currentPage - 2 + i;
                     }
-                    
+
                     return (
                       <PaginationItem key={pageNumber}>
                         <PaginationLink
@@ -673,7 +681,7 @@ export const InterviewsPage = () => {
                       </PaginationItem>
                     );
                   })}
-                  
+
                   {totalPages > 5 && currentPage < totalPages - 2 && (
                     <>
                       <PaginationItem>
@@ -689,9 +697,9 @@ export const InterviewsPage = () => {
                       </PaginationItem>
                     </>
                   )}
-                  
+
                   <PaginationItem>
-                    <PaginationNext 
+                    <PaginationNext
                       onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                       className={cn(
                         "cursor-pointer",
@@ -707,8 +715,8 @@ export const InterviewsPage = () => {
       )}
 
       {/* Reschedule Dialog */}
-      <Dialog 
-        open={!!rescheduleInterview} 
+      <Dialog
+        open={!!rescheduleInterview}
         onOpenChange={() => setRescheduleInterview(null)}
       >
         <DialogContent className="sm:max-w-md">
@@ -719,7 +727,7 @@ export const InterviewsPage = () => {
             <p className="text-sm text-muted-foreground">
               Reschedule interview for {rescheduleInterview?.candidateName}
             </p>
-            
+
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -745,13 +753,13 @@ export const InterviewsPage = () => {
             </Popover>
 
             <div className="flex gap-2 justify-end">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setRescheduleInterview(null)}
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 onClick={confirmReschedule}
                 disabled={!rescheduleDate}
               >
