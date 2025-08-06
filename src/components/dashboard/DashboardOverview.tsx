@@ -92,7 +92,7 @@ export const DashboardOverview = () => {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mt-8">
         <div className="space-y-2">
           <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">Dashboard</h1>
           <p className="text-muted-foreground text-lg">Welcome to your interview management hub</p>
