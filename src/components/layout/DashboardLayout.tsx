@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InterviewsPage } from "@/components/interviews/InterviewsPage";
 import {
   Popover,
@@ -13,10 +12,10 @@ import {
   Calendar,
   Settings,
   LogOut,
-  Menu,
   X,
   User,
-  ChevronRight
+  ChevronRight,
+  LayoutDashboard
 } from "lucide-react";
 
 interface DashboardLayoutProps {
@@ -33,7 +32,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const userRoles = ["Admin", "HR Manager", "Interview Coordinator"];
 
   const navigation = [
-    { id: "dashboard", name: "Dashboard", icon: FolderOpen },
+    { id: "dashboard", name: "Dashboard", icon: LayoutDashboard },
     { id: "projects", name: "Projects", icon: FolderOpen },
     { id: "interviews", name: "Interviews", icon: Calendar },
     { id: "users", name: "Enterprise Users", icon: Users },
@@ -68,26 +67,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         onMouseEnter={() => setSidebarHovered(true)}
         onMouseLeave={() => setSidebarHovered(false)}
       >
-        {/* <div className={`flex items-center justify-between h-16 ${sidebarHovered ? "px-6" : "px-2"} border-b border-border/50 bg-gradient-card transition-[padding] duration-500 ease-in-out gap-4`}>
-          <div className={`${sidebarHovered ? "h-16" : "h-5"} flex items-center justify-center`}>
-            <img src="public\images\logo_icon.png" alt="" />
-          </div>
-          <h1 className={`
-            text-xl font-bold bg-gradient-primary bg-clip-text text-transparent transition-opacity duration-200 ease-in-out
-            ${sidebarHovered ? "opacity-100" : "opacity-0"}
-          `}>
-            <img src="public\images\logo_text.png" alt="" />
-          </h1>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        </div> */}
-
         <div className={`mt-10 h-16 ${sidebarHovered ? "px-6 flex items-center" : "px-2"} duration-500 gap-4`}>
           {/* Logo Icon */}
           <div
@@ -158,39 +137,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </nav>
 
         <div className={`absolute bottom-4 transition-all duration-500 ease-in-out ${sidebarHovered ? "left-4 right-4" : "left-2 right-2"}`}>
-          {/* Profile section */}
-          <div
-            className={`
-              items-center mb-2 transition-all duration-500 ease-in-out ${sidebarHovered ? "flex justify-start" : "justify-center pl-2"}
-            `}
-            style={{ minHeight: "40px" }}
-          >
-            {profileImage ? (
-              <img
-                src={profileImage}
-                alt="Profile"
-                className="h-8 w-8 rounded-full object-cover border border-border"
-                onError={(e) => ((e.currentTarget as HTMLImageElement).src = "")}
-              />
-            ) : (
-              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center border border-border text-base font-semibold text-primary">
-                {getInitials(userName)}
-              </div>
-            )}
-
-            {sidebarHovered && (
-              <span
-                className={`
-                ml-3 text-sm font-medium ease-in-out
-                ${sidebarHovered ? "opacity-100" : "opacity-0"}
-              `}
-                style={{ width: sidebarHovered ? "auto" : 0, overflow: "hidden", whiteSpace: "nowrap" }}
-              >
-                {userName}
-              </span>
-            )}
-          </div>
-
           {/* Profile Button */}
           <div className={`mb-2 ${sidebarHovered ? "" : "mx-1"}`}>
             <Popover>

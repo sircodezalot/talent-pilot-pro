@@ -55,7 +55,7 @@ type FormData = z.infer<typeof formSchema>;
 // Mock project data with dates for sorting
 const allProjects = [
   { name: "Senior Frontend Developer Hiring Q1", lastActivity: new Date("2024-01-15") },
-  { name: "Backend Developer Hiring Q1", lastActivity: new Date("2024-01-10") }, 
+  { name: "Backend Developer Hiring Q1", lastActivity: new Date("2024-01-10") },
   { name: "Full Stack Developer Hiring", lastActivity: new Date("2024-01-08") },
   { name: "Junior Frontend Developer Hiring Q1", lastActivity: new Date("2024-01-05") },
   { name: "DevOps Engineer Hiring", lastActivity: new Date("2024-01-03") },
@@ -77,11 +77,12 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [projectSearch, setProjectSearch] = useState("");
   const { toast } = useToast();
+  const [triggerRef, setTriggerRef] = useState<HTMLButtonElement | null>(null);
 
   // Filter projects based on search or show latest 5 by default
   const filteredProjects = useMemo(() => {
     if (projectSearch.trim()) {
-      return allProjects.filter(project => 
+      return allProjects.filter(project =>
         project.name.toLowerCase().includes(projectSearch.toLowerCase())
       );
     }
@@ -113,7 +114,7 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
         });
         return;
       }
-      
+
       // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
         toast({
@@ -123,7 +124,7 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
         });
         return;
       }
-      
+
       setSelectedFile(file);
     }
   };
@@ -148,13 +149,13 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
       ...data,
       resumeFile: selectedFile,
     };
-    
+
     onSchedule?.(scheduleData);
-    
+
     // Reset form but don't close dialog
     form.reset();
     setSelectedFile(null);
-    
+
     toast({
       title: "Interview Scheduled",
       description: `Interview scheduled for ${data.firstName} ${data.lastName}`,
@@ -185,21 +186,22 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
         <DialogHeader className="bg-gradient-to-r from-primary/10 to-primary/5 -m-6 p-6 mb-6 rounded-t-lg">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-semibold text-primary">Schedule New Interview</DialogTitle>
-            <Button
+            {/* <Button
               variant="ghost"
               size="sm"
               onClick={handleClose}
               className="h-8 w-8 p-0 hover:bg-primary/10"
             >
               <X className="h-4 w-4" />
-            </Button>
+            </Button> */}
           </div>
         </DialogHeader>
-        
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             {/* Project Name and Email in same row */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 items-start">
+              {/* Project Name */}
               <FormField
                 control={form.control}
                 name="projectName"
@@ -210,66 +212,70 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
+                            ref={setTriggerRef}
                             variant="outline"
                             role="combobox"
                             aria-expanded={projectOpen}
-                            className="justify-between hover:bg-primary/5 border-primary/20"
+                            className="w-full justify-between hover:bg-primary/5 border-primary/20"
                           >
                             {field.value || "Select project..."}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                       <PopoverContent className="w-full p-0 bg-popover border border-border shadow-lg">
-                         <Command>
-                           <CommandInput 
-                             placeholder="Search projects..." 
-                             value={projectSearch}
-                             onValueChange={setProjectSearch}
-                           />
-                           <CommandList>
-                             <CommandEmpty>
-                               {projectSearch ? "No projects match your search." : "No projects available."}
-                             </CommandEmpty>
-                             <CommandGroup>
-                               {!projectSearch && (
-                                 <div className="px-2 py-1.5 text-xs text-muted-foreground border-b border-border">
-                                   Latest 5 projects
-                                 </div>
-                               )}
-                               {filteredProjects.map((project) => (
-                                 <CommandItem
-                                   key={project.name}
-                                   value={project.name}
-                                   onSelect={() => {
-                                     field.onChange(project.name);
-                                     setProjectOpen(false);
-                                     setProjectSearch("");
-                                   }}
-                                 >
-                                   <Check
-                                     className={cn(
-                                       "mr-2 h-4 w-4",
-                                       field.value === project.name ? "opacity-100" : "opacity-0"
-                                     )}
-                                   />
-                                   <div className="flex flex-col">
-                                     <span>{project.name}</span>
-                                     <span className="text-xs text-muted-foreground">
-                                       Last activity: {project.lastActivity.toLocaleDateString()}
-                                     </span>
-                                   </div>
-                                 </CommandItem>
-                               ))}
-                               {projectSearch && filteredProjects.length > 0 && (
-                                 <div className="px-2 py-1.5 text-xs text-muted-foreground border-t border-border">
-                                   {filteredProjects.length} result{filteredProjects.length === 1 ? '' : 's'} found
-                                 </div>
-                               )}
-                             </CommandGroup>
-                           </CommandList>
-                         </Command>
-                       </PopoverContent>
+                      <PopoverContent
+                        className="p-0 bg-popover border border-border shadow-lg"
+                        style={{ width: triggerRef?.offsetWidth }}
+                      >
+                        <Command>
+                          <CommandInput
+                            placeholder="Search projects..."
+                            value={projectSearch}
+                            onValueChange={setProjectSearch}
+                          />
+                          <CommandList>
+                            <CommandEmpty>
+                              {projectSearch ? "No projects match your search." : "No projects available."}
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {!projectSearch && (
+                                <div className="px-2 py-1.5 text-xs text-muted-foreground border-b border-border">
+                                  Latest 5 projects
+                                </div>
+                              )}
+                              {filteredProjects.map((project) => (
+                                <CommandItem
+                                  key={project.name}
+                                  value={project.name}
+                                  onSelect={() => {
+                                    field.onChange(project.name);
+                                    setProjectOpen(false);
+                                    setProjectSearch("");
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      field.value === project.name ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  <div className="flex flex-col">
+                                    <span>{project.name}</span>
+                                    <span className="text-xs text-muted-foreground">
+                                      Last activity: {project.lastActivity.toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                </CommandItem>
+                              ))}
+                              {projectSearch && filteredProjects.length > 0 && (
+                                <div className="px-2 py-1.5 text-xs text-muted-foreground border-t border-border">
+                                  {filteredProjects.length} result{filteredProjects.length === 1 ? '' : 's'} found
+                                </div>
+                              )}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
                     </Popover>
                     <FormMessage />
                   </FormItem>
@@ -281,13 +287,13 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col">
                     <FormLabel className="text-primary font-medium">Email Address</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Enter email address" 
-                        type="email" 
-                        {...field} 
+                      <Input
+                        placeholder="Enter email address"
+                        type="email"
+                        {...field}
                         className="border-primary/20 focus:border-primary"
                       />
                     </FormControl>
@@ -306,9 +312,9 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                   <FormItem>
                     <FormLabel className="text-primary font-medium">First Name</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Enter first name" 
-                        {...field} 
+                      <Input
+                        placeholder="Enter first name"
+                        {...field}
                         className="border-primary/20 focus:border-primary"
                       />
                     </FormControl>
@@ -324,9 +330,9 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                   <FormItem>
                     <FormLabel className="text-primary font-medium">Last Name</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Enter last name" 
-                        {...field} 
+                      <Input
+                        placeholder="Enter last name"
+                        {...field}
                         className="border-primary/20 focus:border-primary"
                       />
                     </FormControl>
@@ -365,7 +371,7 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                         />
                         <span className="text-sm text-muted-foreground">PDF, DOC, DOCX (max 10MB)</span>
                       </div>
-                      
+
                       {selectedFile && (
                         <div className="flex items-center justify-between p-3 bg-primary/5 border border-primary/20 rounded-md">
                           <div className="flex items-center gap-2">

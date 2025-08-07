@@ -622,9 +622,9 @@ export const InterviewsPage = () => {
               <TableHeader>
                 <TableRow className="border-border/30 bg-muted/30 hover:bg-muted/40">
                   <TableHead className="font-semibold text-foreground/90 h-14">Candidate</TableHead>
-                  <TableHead className="font-semibold text-foreground/90 px-8">Project</TableHead>
-                  <TableHead className="font-semibold text-foreground/90 px-8">Timeline</TableHead>
-                  <TableHead className="font-semibold text-foreground/90 ">Status</TableHead>
+                  <TableHead className="font-semibold text-foreground/90">Project</TableHead>
+                  <TableHead className="font-semibold text-foreground/90">Timeline</TableHead>
+                  <TableHead className="font-semibold text-foreground/90">Status</TableHead>
                   <TableHead className="font-semibold text-foreground/90 text-center">Score</TableHead>
                   <TableHead className="font-semibold text-foreground/90 text-center">Pass Mark</TableHead>
                   <TableHead className="font-semibold text-foreground/90 text-center">Actions</TableHead>
