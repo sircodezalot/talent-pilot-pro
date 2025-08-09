@@ -182,7 +182,7 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
           Schedule Interview
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-[600px] h-full overflow-y-auto" side="right">
+      <SheetContent className="w-[45%] h-full overflow-y-auto" side="right">
         <SheetHeader className="bg-gradient-to-r from-primary/10 to-primary/5 -m-6 p-6 mb-6 rounded-t-lg">
           <div className="flex items-center justify-between">
             <SheetTitle className="text-xl font-semibold text-primary">Schedule New Interview</SheetTitle>
