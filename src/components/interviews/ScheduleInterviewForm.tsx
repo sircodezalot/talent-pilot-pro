@@ -5,12 +5,12 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   Form,
   FormControl,
@@ -175,27 +175,19 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
         <Button className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           Schedule Interview
         </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="bg-gradient-to-r from-primary/10 to-primary/5 -m-6 p-6 mb-6 rounded-t-lg">
+      </SheetTrigger>
+      <SheetContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto" side="right">
+        <SheetHeader className="bg-gradient-to-r from-primary/10 to-primary/5 -m-6 p-6 mb-6 rounded-t-lg">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-semibold text-primary">Schedule New Interview</DialogTitle>
-            {/* <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleClose}
-              className="h-8 w-8 p-0 hover:bg-primary/10"
-            >
-              <X className="h-4 w-4" />
-            </Button> */}
+            <SheetTitle className="text-xl font-semibold text-primary">Schedule New Interview</SheetTitle>
           </div>
-        </DialogHeader>
+        </SheetHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -481,7 +473,7 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
             </div>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
