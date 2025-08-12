@@ -134,7 +134,7 @@ export default {
 			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
-				'gradient-secondary': 'var(--gradient-secondary)', 
+				'gradient-secondary': 'var(--gradient-secondary)',
 				'gradient-card': 'var(--gradient-card)'
 			},
 			boxShadow: {
@@ -142,7 +142,11 @@ export default {
 				'card': 'var(--shadow-card)',
 				'hover': 'var(--shadow-hover)',
 				'glow': 'var(--glow-primary)'
-			}
+			},
+			transitionTimingFunction: {
+				'in-expo': 'cubic-bezier(0.95, 0.05, 0.795, 0.035)',
+				'out-expo': 'cubic-bezier(0.19, 1, 0.22, 1)',
+			},
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

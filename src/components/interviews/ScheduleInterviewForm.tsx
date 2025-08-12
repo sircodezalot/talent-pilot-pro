@@ -182,10 +182,10 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
           Schedule Interview
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-[65%] h-full overflow-y-auto" side="right">
-        <SheetHeader className="bg-gradient-to-r from-primary/10 to-primary/5 -m-6 p-6 mb-6 rounded-t-lg">
+      <SheetContent side={"custom"} className="right-0 top-0 h-full fixed w-[900px] max-w-full overflow-y-auto p-6 bg-white">
+        <SheetHeader className="-m-6 p-6 mb-6 rounded-t-lg">
           <div className="flex items-center justify-between">
-            <SheetTitle className="text-xl font-semibold text-primary">Schedule New Interview</SheetTitle>
+            <SheetTitle className="text-3xl font-semibold text-primary/80">Schedule New Interview</SheetTitle>
           </div>
         </SheetHeader>
 
@@ -199,7 +199,7 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                 name="projectName"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel className="text-primary font-medium">Project Name</FormLabel>
+                    <FormLabel className="text-primary/80 font-medium">Project Name</FormLabel>
                     <Popover open={projectOpen} onOpenChange={setProjectOpen}>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -208,7 +208,7 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                             variant="outline"
                             role="combobox"
                             aria-expanded={projectOpen}
-                            className="w-full justify-between hover:bg-primary/5 border-primary/20"
+                            className="w-full justify-between hover:bg-primary/5 border-primary/20 text-secondary-foreground/50"
                           >
                             {field.value || "Select project..."}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -280,13 +280,12 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                 name="email"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel className="text-primary font-medium">Email Address</FormLabel>
+                    <FormLabel className="text-primary/80 font-medium">Email Address</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Enter email address"
                         type="email"
                         {...field}
-                        className="border-primary/20 focus:border-primary"
                       />
                     </FormControl>
                     <FormMessage />
@@ -302,12 +301,11 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-primary font-medium">First Name</FormLabel>
+                    <FormLabel className="text-primary/80 font-medium">First Name</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Enter first name"
                         {...field}
-                        className="border-primary/20 focus:border-primary"
                       />
                     </FormControl>
                     <FormMessage />
@@ -320,12 +318,11 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-primary font-medium">Last Name</FormLabel>
+                    <FormLabel className="text-primary/80 font-medium">Last Name</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Enter last name"
                         {...field}
-                        className="border-primary/20 focus:border-primary"
                       />
                     </FormControl>
                     <FormMessage />
@@ -340,7 +337,7 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
               name="resume"
               render={() => (
                 <FormItem>
-                  <FormLabel className="text-primary font-medium">Resume</FormLabel>
+                  <FormLabel className="text-primary/80 font-medium">Resume</FormLabel>
                   <FormControl>
                     <div className="space-y-3">
                       <div className="flex items-center gap-3">
@@ -396,13 +393,13 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-primary font-medium">Phone Number <span className="text-muted-foreground">(Optional)</span></FormLabel>
+                  <FormLabel className="text-primary/80 font-medium">Phone Number <span className="text-muted-foreground">(Optional)</span></FormLabel>
                   <FormControl>
                     <PhoneInput
                       placeholder="Enter phone number"
                       value={field.value}
                       onChange={field.onChange}
-                      defaultCountry="US"
+                      defaultCountry="LK"
                       className="flex h-10 w-full rounded-md border border-primary/20 bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     />
                   </FormControl>
@@ -417,7 +414,7 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                 <Button
                   type="button"
                   variant="ghost"
-                  className="flex items-center justify-between w-full p-0 h-auto font-medium text-primary hover:bg-transparent"
+                  className="flex items-center justify-between w-full p-0 h-auto font-medium text-primary/80 hover:text-primary/80 hover:bg-transparent"
                 >
                   <span>Advanced Configurations</span>
                   {advancedOpen ? (

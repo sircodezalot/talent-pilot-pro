@@ -209,7 +209,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </div>
       </div>
 
-
       {/* Main content */}
       <div className={`transition-[padding] duration-500 ease-in-out ${sidebarHovered ? "lg:pl-64" : "lg:pl-16"}`}>
         {/* Top bar */}
