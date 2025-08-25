@@ -5,7 +5,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Play, PlayCircle, Eye, Download, Filter, Upload, FileText, AlertCircle, ArrowLeft } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Play, PlayCircle, Eye, Download, Filter, Upload, FileText, AlertCircle, ArrowLeft, Search } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { toast } from "sonner";
@@ -39,6 +40,7 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [dragActive, setDragActive] = useState(false);
   const [filterTag, setFilterTag] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -53,14 +55,6 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
   const [cvData, setCvData] = useState<CVData[]>([
     {
       id: "1",
-      fileName: "john_doe_resume.pdf",
-      uploadDate: "2024-01-15",
-      status: "pending",
-      projectId: "1",
-      projectName: "Frontend Developer Hiring"
-    },
-    {
-      id: "2",
       fileName: "jane_smith_cv.pdf",
       uploadDate: "2024-01-15",
       status: "completed",
@@ -68,20 +62,12 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
       lastName: "Smith",
       email: "jane.smith@email.com",
       contactNumber: "+1-555-0123",
-      matchPercentage: 87,
+      matchPercentage: 95,
       projectId: "1",
       projectName: "Frontend Developer Hiring"
     },
     {
-      id: "3",
-      fileName: "mike_johnson_resume.pdf",
-      uploadDate: "2024-01-14",
-      status: "processing",
-      projectId: "2",
-      projectName: "Backend Engineer Recruitment"
-    },
-    {
-      id: "4",
+      id: "2",
       fileName: "sarah_wilson_cv.pdf",
       uploadDate: "2024-01-14",
       status: "completed",
@@ -90,25 +76,197 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
       email: "sarah.wilson@email.com",
       contactNumber: "+1-555-0456",
       matchPercentage: 92,
+      projectId: "1",
+      projectName: "Frontend Developer Hiring"
+    },
+    {
+      id: "3",
+      fileName: "michael_johnson_resume.pdf",
+      uploadDate: "2024-01-13",
+      status: "completed",
+      firstName: "Michael",
+      lastName: "Johnson",
+      email: "michael.johnson@email.com",
+      contactNumber: "+1-555-0789",
+      matchPercentage: 88,
+      projectId: "1",
+      projectName: "Frontend Developer Hiring"
+    },
+    {
+      id: "4",
+      fileName: "emily_davis_cv.pdf",
+      uploadDate: "2024-01-12",
+      status: "completed",
+      firstName: "Emily",
+      lastName: "Davis",
+      email: "emily.davis@email.com",
+      contactNumber: "+1-555-0321",
+      matchPercentage: 91,
       projectId: "2",
       projectName: "Backend Engineer Recruitment"
     },
     {
       id: "5",
-      fileName: "david_brown_resume.pdf",
-      uploadDate: "2024-01-13",
-      status: "pending",
+      fileName: "alex_martinez_resume.pdf",
+      uploadDate: "2024-01-11",
+      status: "completed",
+      firstName: "Alex",
+      lastName: "Martinez",
+      email: "alex.martinez@email.com",
+      contactNumber: "+1-555-0654",
+      matchPercentage: 85,
+      projectId: "2",
+      projectName: "Backend Engineer Recruitment"
+    },
+    {
+      id: "6",
+      fileName: "lisa_chen_cv.pdf",
+      uploadDate: "2024-01-10",
+      status: "completed",
+      firstName: "Lisa",
+      lastName: "Chen",
+      email: "lisa.chen@email.com",
+      contactNumber: "+1-555-0987",
+      matchPercentage: 93,
       projectId: "3",
       projectName: "Full Stack Developer Search"
     },
+    {
+      id: "7",
+      fileName: "james_taylor_resume.pdf",
+      uploadDate: "2024-01-09",
+      status: "completed",
+      firstName: "James",
+      lastName: "Taylor",
+      email: "james.taylor@email.com",
+      contactNumber: "+1-555-0147",
+      matchPercentage: 89,
+      projectId: "3",
+      projectName: "Full Stack Developer Search"
+    },
+    {
+      id: "8",
+      fileName: "amanda_white_cv.pdf",
+      uploadDate: "2024-01-08",
+      status: "completed",
+      firstName: "Amanda",
+      lastName: "White",
+      email: "amanda.white@email.com",
+      contactNumber: "+1-555-0258",
+      matchPercentage: 87,
+      projectId: "1",
+      projectName: "Frontend Developer Hiring"
+    },
+    {
+      id: "9",
+      fileName: "kevin_brown_resume.pdf",
+      uploadDate: "2024-01-07",
+      status: "completed",
+      firstName: "Kevin",
+      lastName: "Brown",
+      email: "kevin.brown@email.com",
+      contactNumber: "+1-555-0369",
+      matchPercentage: 84,
+      projectId: "2",
+      projectName: "Backend Engineer Recruitment"
+    },
+    {
+      id: "10",
+      fileName: "rachel_green_cv.pdf",
+      uploadDate: "2024-01-06",
+      status: "completed",
+      firstName: "Rachel",
+      lastName: "Green",
+      email: "rachel.green@email.com",
+      contactNumber: "+1-555-0471",
+      matchPercentage: 90,
+      projectId: "4",
+      projectName: "DevOps Engineer Hiring"
+    },
+    {
+      id: "11",
+      fileName: "daniel_garcia_resume.pdf",
+      uploadDate: "2024-01-05",
+      status: "completed",
+      firstName: "Daniel",
+      lastName: "Garcia",
+      email: "daniel.garcia@email.com",
+      contactNumber: "+1-555-0582",
+      matchPercentage: 86,
+      projectId: "4",
+      projectName: "DevOps Engineer Hiring"
+    },
+    {
+      id: "12",
+      fileName: "sophia_lee_cv.pdf",
+      uploadDate: "2024-01-04",
+      status: "completed",
+      firstName: "Sophia",
+      lastName: "Lee",
+      email: "sophia.lee@email.com",
+      contactNumber: "+1-555-0693",
+      matchPercentage: 94,
+      projectId: "1",
+      projectName: "Frontend Developer Hiring"
+    },
+    {
+      id: "13",
+      fileName: "robert_clark_resume.pdf",
+      uploadDate: "2024-01-03",
+      status: "completed",
+      firstName: "Robert",
+      lastName: "Clark",
+      email: "robert.clark@email.com",
+      contactNumber: "+1-555-0704",
+      matchPercentage: 82,
+      projectId: "3",
+      projectName: "Full Stack Developer Search"
+    },
+    {
+      id: "14",
+      fileName: "maria_rodriguez_cv.pdf",
+      uploadDate: "2024-01-02",
+      status: "completed",
+      firstName: "Maria",
+      lastName: "Rodriguez",
+      email: "maria.rodriguez@email.com",
+      contactNumber: "+1-555-0815",
+      matchPercentage: 91,
+      projectId: "2",
+      projectName: "Backend Engineer Recruitment"
+    },
+    {
+      id: "15",
+      fileName: "thomas_anderson_resume.pdf",
+      uploadDate: "2024-01-01",
+      status: "completed",
+      firstName: "Thomas",
+      lastName: "Anderson",
+      email: "thomas.anderson@email.com",
+      contactNumber: "+1-555-0926",
+      matchPercentage: 88,
+      projectId: "4",
+      projectName: "DevOps Engineer Hiring"
+    }
   ]);
 
-  // Only show completed CVs and apply tag filtering
+  // Only show completed CVs and apply filtering
   const getFilteredCVs = () => {
     let filtered = selectedProjectId 
       ? cvData.filter(cv => cv.projectId === selectedProjectId && cv.status === "completed")
       : cvData.filter(cv => cv.status === "completed");
 
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(cv => 
+        cv.fileName.toLowerCase().includes(query) ||
+        cv.email?.toLowerCase().includes(query) ||
+        `${cv.firstName} ${cv.lastName}`.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply tag filter
     switch (filterTag) {
       case "top10":
         return filtered.filter(cv => cv.matchPercentage && cv.matchPercentage >= 90);
@@ -310,6 +468,7 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
 
   return (
     <div className="h-full flex flex-col space-y-4">
+      {/* Header Section */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Button
@@ -329,27 +488,29 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
             </p>
           </div>
         </div>
-        
-        {/* Upload Section - Compact top right */}
-        <Card className="w-72">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Upload CVs</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div
-              className={`
-                border-2 border-dashed rounded-lg p-4 text-center transition-colors
-                ${dragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25"}
-              `}
-              onDragEnter={handleDrag}
-              onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
-            >
-              <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Drop files or browse</p>
-                <div>
+      </div>
+
+      {/* Upload Section - Full width but compact */}
+      <Card className="w-full">
+          <CardContent className="py-4">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Upload className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm font-medium">Upload CVs:</span>
+              </div>
+              
+              <div
+                className={`
+                  flex-1 border-2 border-dashed rounded-lg p-3 text-center transition-colors cursor-pointer
+                  ${dragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25"}
+                `}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+              >
+                <div className="flex items-center justify-center space-x-3">
+                  <p className="text-sm text-muted-foreground">Drop files here or</p>
                   <input
                     type="file"
                     multiple
@@ -359,34 +520,42 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
                     id="file-upload"
                   />
                   <label htmlFor="file-upload">
-                    <Button variant="outline" size="sm" className="cursor-pointer" asChild>
+                    <Button variant="outline" size="sm" className="cursor-pointer h-7" asChild>
                       <span>Browse Files</span>
                     </Button>
                   </label>
                 </div>
               </div>
+
+              <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                <AlertCircle className="h-4 w-4" />
+                <span>PDF, DOC, DOCX supported</span>
+              </div>
+
+              <Button
+                onClick={handleUpload}
+                disabled={!selectedProjectId || uploadedFiles.length === 0}
+                size="sm"
+              >
+                Upload ({uploadedFiles.length})
+              </Button>
             </div>
 
             {uploadedFiles.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium">
-                  Files ({uploadedFiles.length})
-                </p>
-                <div className="space-y-1 max-h-24 overflow-y-auto">
+              <div className="mt-2">
+                <div className="flex flex-wrap gap-2">
                   {uploadedFiles.map((file, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-2 bg-muted/50 rounded text-xs"
+                      className="flex items-center space-x-1 px-2 py-1 bg-muted/50 rounded text-xs"
                     >
-                      <div className="flex items-center space-x-2 min-w-0">
-                        <FileText className="h-3 w-3 text-blue-500 flex-shrink-0" />
-                        <span className="truncate">{file.name}</span>
-                      </div>
+                      <FileText className="h-3 w-3 text-blue-500" />
+                      <span className="truncate max-w-32">{file.name}</span>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => removeFile(index)}
-                        className="text-destructive hover:text-destructive h-6 w-6 p-0"
+                        className="text-destructive hover:text-destructive h-4 w-4 p-0"
                       >
                         ×
                       </Button>
@@ -395,39 +564,30 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
                 </div>
               </div>
             )}
-
-            <div className="border-t pt-3 space-y-2">
-              <div className="flex items-start space-x-2">
-                <AlertCircle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
-                <div className="text-xs text-muted-foreground space-y-1">
-                  <p>• PDF, DOC, DOCX files supported</p>
-                  <p>• Max 10MB per file</p>
-                  <p>• Files processed automatically on upload</p>
-                </div>
-              </div>
-              <Button
-                onClick={handleUpload}
-                disabled={!selectedProjectId || uploadedFiles.length === 0}
-                className="w-full"
-                size="sm"
-              >
-                Upload & Process CVs
-              </Button>
-            </div>
           </CardContent>
         </Card>
-      </div>
 
-      {/* CV Management Table - Main focus with full height */}
-      <Card className="flex-1 min-h-0">
+        {/* CV Management Table - Main focus with full height */}
+        <Card className="flex-1 min-h-0">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div>
-                <CardTitle className="text-lg">Talent Database</CardTitle>
-                <CardDescription>
-                  {filteredCVs.length} candidates available
-                </CardDescription>
+            <div>
+              <CardTitle className="text-lg">Talent Database</CardTitle>
+              <CardDescription>
+                {filteredCVs.length} candidates available
+              </CardDescription>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search candidates..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 w-64"
+                />
               </div>
               
               {/* Filter Tags */}
@@ -443,16 +603,16 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
                   <SelectItem value="scheduled">Scheduled</SelectItem>
                 </SelectContent>
               </Select>
+              
+              <Button
+                onClick={() => toast.info("Schedule interviews functionality coming soon")}
+                disabled={selectedCVs.length === 0}
+                className="flex items-center space-x-2"
+              >
+                <PlayCircle className="h-4 w-4" />
+                <span>Schedule Interviews ({selectedCVs.length})</span>
+              </Button>
             </div>
-            
-            <Button
-              onClick={() => toast.info("Schedule interviews functionality coming soon")}
-              disabled={selectedCVs.length === 0}
-              className="flex items-center space-x-2"
-            >
-              <PlayCircle className="h-4 w-4" />
-              <span>Schedule Interviews ({selectedCVs.length})</span>
-            </Button>
           </div>
         </CardHeader>
         <CardContent className="p-0 flex flex-col flex-1 min-h-0">
