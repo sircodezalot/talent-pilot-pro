@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Play, PlayCircle, Eye, Download, Filter, Upload, FileText, AlertCircle, ArrowLeft } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { toast } from "sonner";
 
 interface CVData {
@@ -37,6 +38,9 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
   const [selectedCVs, setSelectedCVs] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [dragActive, setDragActive] = useState(false);
+  const [filterTag, setFilterTag] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Mock data
   const projects: Project[] = [
@@ -99,9 +103,27 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
     },
   ]);
 
-  const filteredCVs = selectedProjectId 
-    ? cvData.filter(cv => cv.projectId === selectedProjectId)
-    : cvData;
+  // Only show completed CVs and apply tag filtering
+  const getFilteredCVs = () => {
+    let filtered = selectedProjectId 
+      ? cvData.filter(cv => cv.projectId === selectedProjectId && cv.status === "completed")
+      : cvData.filter(cv => cv.status === "completed");
+
+    switch (filterTag) {
+      case "top10":
+        return filtered.filter(cv => cv.matchPercentage && cv.matchPercentage >= 90);
+      case "top20":
+        return filtered.filter(cv => cv.matchPercentage && cv.matchPercentage >= 80);
+      case "scheduled":
+        return filtered.filter(cv => cv.firstName?.includes("Scheduled")); // Mock condition
+      default:
+        return filtered;
+    }
+  };
+
+  const filteredCVs = getFilteredCVs();
+  const totalPages = Math.ceil(filteredCVs.length / itemsPerPage);
+  const paginatedCVs = filteredCVs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleSelectCV = (cvId: string) => {
     setSelectedCVs(prev => 
@@ -112,10 +134,10 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
   };
 
   const handleSelectAll = () => {
-    if (selectedCVs.length === filteredCVs.length) {
+    if (selectedCVs.length === paginatedCVs.length) {
       setSelectedCVs([]);
     } else {
-      setSelectedCVs(filteredCVs.map(cv => cv.id));
+      setSelectedCVs(paginatedCVs.map(cv => cv.id));
     }
   };
 
@@ -287,7 +309,7 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
 
   return (
-    <div className="space-y-6">
+    <div className="h-full flex flex-col space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Button
@@ -298,10 +320,18 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Projects</span>
           </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">
+              {selectedProject ? selectedProject.name : "Project Talent"}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Manage and review uploaded candidate profiles
+            </p>
+          </div>
         </div>
         
-        {/* Upload Section - Moved to top right */}
-        <Card className="w-80">
+        {/* Upload Section - Compact top right */}
+        <Card className="w-72">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg">Upload CVs</CardTitle>
           </CardHeader>
@@ -387,46 +417,52 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
           </CardContent>
         </Card>
       </div>
-      
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">
-          {selectedProject ? selectedProject.name : "Project CVs"}
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Manage and review uploaded CVs for this project
-        </p>
-      </div>
 
-      {/* CV Management Table - Now the main focus */}
-      <Card className="flex-1">
-        <CardHeader>
+      {/* CV Management Table - Main focus with full height */}
+      <Card className="flex-1 min-h-0">
+        <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>CV Management</CardTitle>
-              <CardDescription>
-                Review and manage uploaded candidate CVs
-              </CardDescription>
-            </div>
             <div className="flex items-center space-x-4">
-              <Button
-                onClick={() => toast.info("Schedule interviews functionality coming soon")}
-                disabled={selectedCVs.length === 0}
-                className="flex items-center space-x-2"
-              >
-                <PlayCircle className="h-4 w-4" />
-                <span>Schedule Interviews ({selectedCVs.length})</span>
-              </Button>
+              <div>
+                <CardTitle className="text-lg">Talent Database</CardTitle>
+                <CardDescription>
+                  {filteredCVs.length} candidates available
+                </CardDescription>
+              </div>
+              
+              {/* Filter Tags */}
+              <Select value={filterTag} onValueChange={setFilterTag}>
+                <SelectTrigger className="w-40">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Filter by tag" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Candidates</SelectItem>
+                  <SelectItem value="top10">Top 10% (90%+)</SelectItem>
+                  <SelectItem value="top20">Top 20% (80%+)</SelectItem>
+                  <SelectItem value="scheduled">Scheduled</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+            
+            <Button
+              onClick={() => toast.info("Schedule interviews functionality coming soon")}
+              disabled={selectedCVs.length === 0}
+              className="flex items-center space-x-2"
+            >
+              <PlayCircle className="h-4 w-4" />
+              <span>Schedule Interviews ({selectedCVs.length})</span>
+            </Button>
           </div>
         </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-hidden">
+        <CardContent className="p-0 flex flex-col flex-1 min-h-0">
+          <div className="flex-1 overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow className="border-b">
                   <TableHead className="w-12 pl-6">
                     <Checkbox
-                      checked={selectedCVs.length === filteredCVs.length && filteredCVs.length > 0}
+                      checked={selectedCVs.length === paginatedCVs.length && paginatedCVs.length > 0}
                       onCheckedChange={handleSelectAll}
                       className="rounded-sm"
                     />
@@ -442,7 +478,7 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredCVs.map((cv) => (
+                {paginatedCVs.map((cv) => (
                   <TableRow key={cv.id} className="hover:bg-muted/50">
                     <TableCell className="pl-6">
                       <Checkbox
@@ -493,12 +529,61 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
               </TableBody>
             </Table>
           </div>
+          
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="border-t p-4">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage > 1) setCurrentPage(currentPage - 1);
+                      }}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setCurrentPage(page);
+                        }}
+                        isActive={currentPage === page}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                      }}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
 
+          {/* Empty State */}
           {filteredCVs.length === 0 && (
             <div className="text-center py-12">
               <FileText className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
-              <p className="text-muted-foreground">No CVs uploaded yet</p>
-              <p className="text-sm text-muted-foreground">Upload CVs using the box above to get started</p>
+              <p className="text-muted-foreground">No candidates found</p>
+              <p className="text-sm text-muted-foreground">
+                {filterTag !== "all" ? "Try adjusting your filter settings" : "Upload CVs using the box above to get started"}
+              </p>
             </div>
           )}
         </CardContent>
