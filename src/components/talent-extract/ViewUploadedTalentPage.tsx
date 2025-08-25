@@ -470,23 +470,22 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
     <div className="h-full flex flex-col space-y-4">
       {/* Header Section */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            onClick={onBackToProjects}
-            className="flex items-center space-x-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to Projects</span>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">
-              {selectedProject ? selectedProject.name : "Project Talent"}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Manage and review uploaded candidate profiles
-            </p>
-          </div>
+        <Button
+          variant="ghost"
+          onClick={onBackToProjects}
+          className="flex items-center space-x-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back to Projects</span>
+        </Button>
+        
+        <div className="text-right">
+          <h1 className="text-2xl font-bold text-foreground">
+            {selectedProject ? selectedProject.name : "Project Talent"}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Manage and review uploaded candidate profiles
+          </p>
         </div>
       </div>
 
@@ -537,7 +536,7 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
                 disabled={!selectedProjectId || uploadedFiles.length === 0}
                 size="sm"
               >
-                Upload ({uploadedFiles.length})
+                Extract ({uploadedFiles.length})
               </Button>
             </div>
 
@@ -627,13 +626,11 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
                       className="rounded-sm"
                     />
                   </TableHead>
-                  <TableHead className="font-semibold">File Name</TableHead>
-                  <TableHead className="font-semibold">Upload Date</TableHead>
-                  <TableHead className="font-semibold">Status</TableHead>
-                  <TableHead className="font-semibold">Candidate Name</TableHead>
-                  <TableHead className="font-semibold">Email</TableHead>
-                  <TableHead className="font-semibold">Contact</TableHead>
-                  <TableHead className="font-semibold">JD Match</TableHead>
+                  <TableHead className="font-semibold min-w-48">Candidate</TableHead>
+                  <TableHead className="font-semibold min-w-40">Email</TableHead>
+                  <TableHead className="font-semibold min-w-32">Contact</TableHead>
+                  <TableHead className="font-semibold min-w-24">Match</TableHead>
+                  <TableHead className="font-semibold min-w-28">Upload Date</TableHead>
                   <TableHead className="font-semibold w-20">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -648,41 +645,40 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
                       />
                     </TableCell>
                     <TableCell className="font-medium">
-                      <div className="flex items-center space-x-2">
-                        <FileText className="h-4 w-4 text-blue-500" />
-                        <span>{cv.fileName}</span>
+                      <div className="space-y-1">
+                        <div className="flex items-center space-x-2">
+                          <FileText className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                          <span>{cv.firstName && cv.lastName ? `${cv.firstName} ${cv.lastName}` : "Processing..."}</span>
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate">
+                          {cv.fileName}
+                        </div>
                       </div>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">{cv.uploadDate}</TableCell>
-                    <TableCell>{getStatusBadge(cv.status)}</TableCell>
-                    <TableCell className="font-medium">
-                      {cv.firstName && cv.lastName ? `${cv.firstName} ${cv.lastName}` : (
-                        <span className="text-muted-foreground">Processing...</span>
-                      )}
                     </TableCell>
                     <TableCell className="text-muted-foreground">{cv.email || "Processing..."}</TableCell>
                     <TableCell className="text-muted-foreground">{cv.contactNumber || "Processing..."}</TableCell>
                     <TableCell>
                       {cv.matchPercentage ? (
                         <div className="flex items-center space-x-2">
-                          <span className={`font-semibold ${getMatchPercentageColor(cv.matchPercentage)}`}>
+                          <span className={`font-semibold text-sm ${getMatchPercentageColor(cv.matchPercentage)}`}>
                             {cv.matchPercentage}%
                           </span>
-                          <Progress value={cv.matchPercentage} className="w-20 h-2" />
+                          <Progress value={cv.matchPercentage} className="w-16 h-2" />
                         </div>
                       ) : (
-                        <span className="text-muted-foreground">Processing...</span>
+                        <span className="text-muted-foreground text-sm">Processing...</span>
                       )}
                     </TableCell>
+                    <TableCell className="text-muted-foreground text-sm">{cv.uploadDate}</TableCell>
                     <TableCell>
-                      <div className="flex items-center space-x-1">
-                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toast.info("Download functionality coming soon")}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
