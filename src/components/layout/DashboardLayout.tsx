@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { InterviewsPage } from "@/components/interviews/InterviewsPage";
-import { CVFiltrationPage } from "@/components/cv-filtration/CVFiltrationPage";
+import { TalentExtractPage } from "@/components/talent-extract/TalentExtractPage";
 import {
   Popover,
   PopoverContent,
@@ -37,7 +37,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     { id: "dashboard", name: "Dashboard", icon: LayoutDashboard },
     { id: "projects", name: "Projects", icon: FolderOpen },
     { id: "interviews", name: "Interviews", icon: Calendar },
-    { id: "cv-filtration", name: "CV Filtration", icon: FileSearch },
+    { id: "talent-extract", name: "Talent Extract", icon: FileSearch },
     { id: "users", name: "Enterprise Users", icon: Users },
     { id: "settings", name: "Settings", icon: Settings },
   ];
@@ -237,7 +237,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <main className="px-6 py-3">
           {activeTab === "dashboard" && children}
           {activeTab === "interviews" && <InterviewsPage />}
-          {activeTab === "cv-filtration" && <CVFiltrationPage />}
+          {activeTab === "talent-extract" && <TalentExtractPage />}
           {activeTab === "projects" && <div>Projects page coming soon...</div>}
           {activeTab === "users" && <div>Enterprise Users page coming soon...</div>}
           {activeTab === "settings" && <div>Settings page coming soon...</div>}
