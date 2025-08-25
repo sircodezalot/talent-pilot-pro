@@ -112,11 +112,10 @@ export const ViewUploadedCVsPage = ({ selectedProjectId, onBackToProjects }: Vie
   };
 
   const handleSelectAll = () => {
-    const pendingCVs = filteredCVs.filter(cv => cv.status === "pending").map(cv => cv.id);
-    if (selectedCVs.length === pendingCVs.length) {
+    if (selectedCVs.length === filteredCVs.length) {
       setSelectedCVs([]);
     } else {
-      setSelectedCVs(pendingCVs);
+      setSelectedCVs(filteredCVs.map(cv => cv.id));
     }
   };
 
@@ -208,27 +207,33 @@ export const ViewUploadedCVsPage = ({ selectedProjectId, onBackToProjects }: Vie
     setDragActive(false);
 
     const files = Array.from(e.dataTransfer.files).filter(
-      file => file.type === "application/pdf" || file.name.endsWith('.pdf')
+      file => file.type === "application/pdf" || 
+              file.type === "application/msword" || 
+              file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+              file.name.endsWith('.pdf') || file.name.endsWith('.doc') || file.name.endsWith('.docx')
     );
 
     if (files.length > 0) {
       setUploadedFiles(prev => [...prev, ...files]);
       toast.success(`${files.length} CV(s) added for upload`);
     } else {
-      toast.error("Please upload only PDF files");
+      toast.error("Please upload only PDF, DOC, or DOCX files");
     }
   };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []).filter(
-      file => file.type === "application/pdf" || file.name.endsWith('.pdf')
+      file => file.type === "application/pdf" || 
+              file.type === "application/msword" || 
+              file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+              file.name.endsWith('.pdf') || file.name.endsWith('.doc') || file.name.endsWith('.docx')
     );
 
     if (files.length > 0) {
       setUploadedFiles(prev => [...prev, ...files]);
       toast.success(`${files.length} CV(s) added for upload`);
     } else {
-      toast.error("Please upload only PDF files");
+      toast.error("Please upload only PDF, DOC, or DOCX files");
     }
   };
 
@@ -248,24 +253,139 @@ export const ViewUploadedCVsPage = ({ selectedProjectId, onBackToProjects }: Vie
       return;
     }
 
-    // Mock upload process
-    toast.success(`${uploadedFiles.length} CV(s) uploaded successfully for processing`);
+    // Mock upload process - automatically process CVs
+    const newCVs = uploadedFiles.map((file, index) => ({
+      id: `new-${Date.now()}-${index}`,
+      fileName: file.name,
+      uploadDate: new Date().toISOString().split('T')[0],
+      status: "processing" as const,
+      projectId: selectedProjectId!,
+      projectName: selectedProject?.name || "Unknown Project"
+    }));
+
+    setCvData(prev => [...prev, ...newCVs]);
+    toast.success(`${uploadedFiles.length} CV(s) uploaded and processing started`);
     setUploadedFiles([]);
+
+    // Simulate processing completion
+    setTimeout(() => {
+      setCvData(prev => prev.map(cv => 
+        newCVs.find(newCv => newCv.id === cv.id) ? { 
+          ...cv, 
+          status: "completed" as const,
+          firstName: "Sample",
+          lastName: "Candidate",
+          email: "candidate@email.com",
+          contactNumber: "+1-555-0000",
+          matchPercentage: Math.floor(Math.random() * 30) + 70
+        } : cv
+      ));
+      toast.success("CV processing completed");
+    }, 3000);
   };
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center space-x-4">
-        <Button
-          variant="ghost"
-          onClick={onBackToProjects}
-          className="flex items-center space-x-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Back to Projects</span>
-        </Button>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            onClick={onBackToProjects}
+            className="flex items-center space-x-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Projects</span>
+          </Button>
+        </div>
+        
+        {/* Upload Section - Moved to top right */}
+        <Card className="w-80">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Upload CVs</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div
+              className={`
+                border-2 border-dashed rounded-lg p-4 text-center transition-colors
+                ${dragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25"}
+              `}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+            >
+              <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Drop files or browse</p>
+                <div>
+                  <input
+                    type="file"
+                    multiple
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleFileInput}
+                    className="hidden"
+                    id="file-upload"
+                  />
+                  <label htmlFor="file-upload">
+                    <Button variant="outline" size="sm" className="cursor-pointer" asChild>
+                      <span>Browse Files</span>
+                    </Button>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {uploadedFiles.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium">
+                  Files ({uploadedFiles.length})
+                </p>
+                <div className="space-y-1 max-h-24 overflow-y-auto">
+                  {uploadedFiles.map((file, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-2 bg-muted/50 rounded text-xs"
+                    >
+                      <div className="flex items-center space-x-2 min-w-0">
+                        <FileText className="h-3 w-3 text-blue-500 flex-shrink-0" />
+                        <span className="truncate">{file.name}</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeFile(index)}
+                        className="text-destructive hover:text-destructive h-6 w-6 p-0"
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="border-t pt-3 space-y-2">
+              <div className="flex items-start space-x-2">
+                <AlertCircle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p>• PDF, DOC, DOCX files supported</p>
+                  <p>• Max 10MB per file</p>
+                  <p>• Files processed automatically on upload</p>
+                </div>
+              </div>
+              <Button
+                onClick={handleUpload}
+                disabled={!selectedProjectId || uploadedFiles.length === 0}
+                className="w-full"
+                size="sm"
+              >
+                Upload & Process CVs
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
       
       <div>
@@ -273,213 +393,98 @@ export const ViewUploadedCVsPage = ({ selectedProjectId, onBackToProjects }: Vie
           {selectedProject ? selectedProject.name : "Project CVs"}
         </h1>
         <p className="text-muted-foreground mt-2">
-          Upload and process CVs for this project
+          Manage and review uploaded CVs for this project
         </p>
       </div>
 
-      {/* Upload Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Upload CVs</CardTitle>
-          <CardDescription>
-            Drag and drop PDF files or click to browse. Only PDF files are supported.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div
-            className={`
-              border-2 border-dashed rounded-lg p-8 text-center transition-colors
-              ${dragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25"}
-              ${uploadedFiles.length > 0 ? "mb-6" : ""}
-            `}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-          >
-            <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <div className="space-y-2">
-              <p className="text-lg font-medium">Drop your CV files here</p>
-              <p className="text-sm text-muted-foreground">or</p>
-              <div>
-                <input
-                  type="file"
-                  multiple
-                  accept=".pdf"
-                  onChange={handleFileInput}
-                  className="hidden"
-                  id="file-upload"
-                />
-                <label htmlFor="file-upload">
-                  <Button variant="outline" className="cursor-pointer" asChild>
-                    <span>Browse Files</span>
-                  </Button>
-                </label>
-              </div>
-              <p className="text-xs text-muted-foreground">PDF files only, up to 10MB each</p>
-            </div>
-          </div>
-
-          {uploadedFiles.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="font-medium text-foreground">
-                Selected Files ({uploadedFiles.length})
-              </h3>
-              <div className="space-y-2 max-h-40 overflow-y-auto">
-                {uploadedFiles.map((file, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 bg-muted/50 rounded-md"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <FileText className="h-4 w-4 text-red-500" />
-                      <div>
-                        <p className="text-sm font-medium">{file.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {(file.size / 1024 / 1024).toFixed(2)} MB
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeFile(index)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="flex justify-end mt-6">
-            <Button
-              onClick={handleUpload}
-              disabled={!selectedProjectId || uploadedFiles.length === 0}
-              className="min-w-32"
-            >
-              Upload CVs
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-amber-200 bg-amber-50/50 dark:border-amber-800 dark:bg-amber-900/10">
-        <CardContent className="pt-6">
-          <div className="flex items-start space-x-3">
-            <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-                Important Notes
-              </p>
-              <ul className="text-sm text-amber-700 dark:text-amber-300 space-y-1 list-disc list-inside">
-                <li>Only PDF files are supported for CV uploads</li>
-                <li>Maximum file size is 10MB per CV</li>
-                <li>Processing will extract name, email, contact number, and calculate JD match percentage</li>
-                <li>Click "Process" on individual CVs or select multiple for bulk processing</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
+      {/* CV Management Table - Now the main focus */}
+      <Card className="flex-1">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>CV Management</CardTitle>
               <CardDescription>
-                Process uploaded CVs and view extracted information
+                Review and manage uploaded candidate CVs
               </CardDescription>
             </div>
             <div className="flex items-center space-x-4">
               <Button
-                onClick={handleBulkProcess}
+                onClick={() => toast.info("Schedule interviews functionality coming soon")}
                 disabled={selectedCVs.length === 0}
                 className="flex items-center space-x-2"
               >
                 <PlayCircle className="h-4 w-4" />
-                <span>Process Selected ({selectedCVs.length})</span>
+                <span>Schedule Interviews ({selectedCVs.length})</span>
               </Button>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="rounded-md border overflow-hidden">
+        <CardContent className="p-0">
+          <div className="overflow-hidden">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12">
+                <TableRow className="border-b">
+                  <TableHead className="w-12 pl-6">
                     <Checkbox
-                      checked={selectedCVs.length === filteredCVs.filter(cv => cv.status === "pending").length && filteredCVs.filter(cv => cv.status === "pending").length > 0}
+                      checked={selectedCVs.length === filteredCVs.length && filteredCVs.length > 0}
                       onCheckedChange={handleSelectAll}
+                      className="rounded-sm"
                     />
                   </TableHead>
-                  <TableHead>File Name</TableHead>
-                  <TableHead>Project</TableHead>
-                  <TableHead>Upload Date</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Match %</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="font-semibold">File Name</TableHead>
+                  <TableHead className="font-semibold">Upload Date</TableHead>
+                  <TableHead className="font-semibold">Status</TableHead>
+                  <TableHead className="font-semibold">Candidate Name</TableHead>
+                  <TableHead className="font-semibold">Email</TableHead>
+                  <TableHead className="font-semibold">Contact</TableHead>
+                  <TableHead className="font-semibold">JD Match</TableHead>
+                  <TableHead className="font-semibold w-20">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredCVs.map((cv) => (
-                  <TableRow key={cv.id}>
-                    <TableCell>
+                  <TableRow key={cv.id} className="hover:bg-muted/50">
+                    <TableCell className="pl-6">
                       <Checkbox
                         checked={selectedCVs.includes(cv.id)}
                         onCheckedChange={() => handleSelectCV(cv.id)}
-                        disabled={cv.status !== "pending"}
+                        className="rounded-sm"
                       />
                     </TableCell>
-                    <TableCell className="font-medium">{cv.fileName}</TableCell>
-                    <TableCell>{cv.projectName}</TableCell>
-                    <TableCell>{cv.uploadDate}</TableCell>
-                    <TableCell>{getStatusBadge(cv.status)}</TableCell>
-                    <TableCell>
-                      {cv.firstName && cv.lastName ? `${cv.firstName} ${cv.lastName}` : "-"}
+                    <TableCell className="font-medium">
+                      <div className="flex items-center space-x-2">
+                        <FileText className="h-4 w-4 text-blue-500" />
+                        <span>{cv.fileName}</span>
+                      </div>
                     </TableCell>
-                    <TableCell>{cv.email || "-"}</TableCell>
-                    <TableCell>{cv.contactNumber || "-"}</TableCell>
+                    <TableCell className="text-muted-foreground">{cv.uploadDate}</TableCell>
+                    <TableCell>{getStatusBadge(cv.status)}</TableCell>
+                    <TableCell className="font-medium">
+                      {cv.firstName && cv.lastName ? `${cv.firstName} ${cv.lastName}` : (
+                        <span className="text-muted-foreground">Processing...</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{cv.email || "Processing..."}</TableCell>
+                    <TableCell className="text-muted-foreground">{cv.contactNumber || "Processing..."}</TableCell>
                     <TableCell>
                       {cv.matchPercentage ? (
                         <div className="flex items-center space-x-2">
-                          <span className={`font-medium ${getMatchPercentageColor(cv.matchPercentage)}`}>
+                          <span className={`font-semibold ${getMatchPercentageColor(cv.matchPercentage)}`}>
                             {cv.matchPercentage}%
                           </span>
-                          <Progress value={cv.matchPercentage} className="w-16 h-2" />
+                          <Progress value={cv.matchPercentage} className="w-20 h-2" />
                         </div>
-                      ) : "-"}
+                      ) : (
+                        <span className="text-muted-foreground">Processing...</span>
+                      )}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center space-x-2">
-                        {cv.status === "pending" && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleProcessCV(cv.id)}
-                            className="flex items-center space-x-1"
-                          >
-                            <Play className="h-3 w-3" />
-                            <span>Process</span>
-                          </Button>
-                        )}
-                        {cv.status === "processing" && (
-                          <Badge variant="outline" className="text-blue-600 border-blue-300">
-                            Processing...
-                          </Badge>
-                        )}
-                        <Button size="sm" variant="ghost">
-                          <Eye className="h-3 w-3" />
+                      <div className="flex items-center space-x-1">
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                          <Eye className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="ghost">
-                          <Download className="h-3 w-3" />
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                          <Download className="h-4 w-4" />
                         </Button>
                       </div>
                     </TableCell>
@@ -490,8 +495,10 @@ export const ViewUploadedCVsPage = ({ selectedProjectId, onBackToProjects }: Vie
           </div>
 
           {filteredCVs.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">No CVs found for this project</p>
+            <div className="text-center py-12">
+              <FileText className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
+              <p className="text-muted-foreground">No CVs uploaded yet</p>
+              <p className="text-sm text-muted-foreground">Upload CVs using the box above to get started</p>
             </div>
           )}
         </CardContent>
