@@ -467,9 +467,9 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
 
   return (
-    <div className="h-full flex flex-col space-y-4">
+    <div className="h-screen flex flex-col p-6 space-y-4 overflow-hidden">
       {/* Header Section */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-shrink-0">
         <Button
           variant="ghost"
           onClick={onBackToProjects}
@@ -490,7 +490,7 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
       </div>
 
       {/* Upload Section - Full width but compact */}
-      <Card className="w-full">
+      <Card className="w-full flex-shrink-0">
           <CardContent className="py-4">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
@@ -567,74 +567,75 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
         </Card>
 
         {/* CV Management Table - Main focus with full height */}
-        <Card className="flex-1 min-h-0">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg">Talent Database</CardTitle>
-              <CardDescription>
-                {filteredCVs.length} candidates available
-              </CardDescription>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search candidates..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 w-64"
-                />
+        <Card className="flex-1 flex flex-col min-h-0">
+          <CardHeader className="pb-4 flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg">Talent Database</CardTitle>
+                <CardDescription>
+                  {filteredCVs.length} candidates available
+                </CardDescription>
               </div>
               
-              {/* Filter Tags */}
-              <Select value={filterTag} onValueChange={setFilterTag}>
-                <SelectTrigger className="w-40">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Filter by tag" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Candidates</SelectItem>
-                  <SelectItem value="top10">Top 10% (90%+)</SelectItem>
-                  <SelectItem value="top20">Top 20% (80%+)</SelectItem>
-                  <SelectItem value="scheduled">Scheduled</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Button
-                onClick={() => toast.info("Schedule interviews functionality coming soon")}
-                disabled={selectedCVs.length === 0}
-                className="flex items-center space-x-2"
-              >
-                <PlayCircle className="h-4 w-4" />
-                <span>Schedule Interviews ({selectedCVs.length})</span>
-              </Button>
+              <div className="flex items-center space-x-3">
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search candidates..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9 w-64"
+                  />
+                </div>
+                
+                {/* Filter Tags */}
+                <Select value={filterTag} onValueChange={setFilterTag}>
+                  <SelectTrigger className="w-40">
+                    <Filter className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder="Filter by tag" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Candidates</SelectItem>
+                    <SelectItem value="top10">Top 10% (90%+)</SelectItem>
+                    <SelectItem value="top20">Top 20% (80%+)</SelectItem>
+                    <SelectItem value="scheduled">Scheduled</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                <Button
+                  onClick={() => toast.info("Schedule interviews functionality coming soon")}
+                  disabled={selectedCVs.length === 0}
+                  className="flex items-center space-x-2"
+                >
+                  <PlayCircle className="h-4 w-4" />
+                  <span>Schedule Interviews ({selectedCVs.length})</span>
+                </Button>
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0 flex flex-col flex-1 min-h-0">
-          <div className="flex-1 overflow-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-b">
-                  <TableHead className="w-12 pl-6">
-                    <Checkbox
-                      checked={selectedCVs.length === paginatedCVs.length && paginatedCVs.length > 0}
-                      onCheckedChange={handleSelectAll}
-                      className="rounded-sm"
-                    />
-                  </TableHead>
-                  <TableHead className="font-semibold min-w-48">Candidate</TableHead>
-                  <TableHead className="font-semibold min-w-40">Email</TableHead>
-                  <TableHead className="font-semibold min-w-32">Contact</TableHead>
-                  <TableHead className="font-semibold min-w-24">Match</TableHead>
-                  <TableHead className="font-semibold min-w-28">Upload Date</TableHead>
-                  <TableHead className="font-semibold w-20">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+          </CardHeader>
+
+          <CardContent className="p-0 flex flex-col flex-1 min-h-0">
+            <div className="flex-1 overflow-auto border-b">
+              <Table>
+                <TableHeader className="sticky top-0 bg-background z-10">
+                  <TableRow className="border-b">
+                    <TableHead className="w-12 pl-6">
+                      <Checkbox
+                        checked={selectedCVs.length === paginatedCVs.length && paginatedCVs.length > 0}
+                        onCheckedChange={handleSelectAll}
+                        className="rounded-sm"
+                      />
+                    </TableHead>
+                    <TableHead className="font-semibold min-w-48">Candidate</TableHead>
+                    <TableHead className="font-semibold min-w-40">Email</TableHead>
+                    <TableHead className="font-semibold min-w-32">Contact</TableHead>
+                    <TableHead className="font-semibold min-w-24">Match</TableHead>
+                    <TableHead className="font-semibold min-w-28">Upload Date</TableHead>
+                    <TableHead className="font-semibold w-20">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                 {paginatedCVs.map((cv) => (
                   <TableRow key={cv.id} className="hover:bg-muted/50">
                     <TableCell className="pl-6">
@@ -682,68 +683,74 @@ export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: 
                     </TableCell>
                   </TableRow>
                 ))}
-              </TableBody>
-            </Table>
-          </div>
-          
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="border-t p-4">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (currentPage > 1) setCurrentPage(currentPage - 1);
-                      }}
-                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                    />
-                  </PaginationItem>
-                  
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <PaginationItem key={page}>
-                      <PaginationLink
+                </TableBody>
+              </Table>
+            </div>
+            
+            {/* Pagination Footer */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between px-6 py-4 border-t bg-muted/5">
+                <div className="text-sm text-muted-foreground">
+                  Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredCVs.length)} of {filteredCVs.length} candidates
+                </div>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
                         href="#"
                         onClick={(e) => {
                           e.preventDefault();
-                          setCurrentPage(page);
+                          if (currentPage > 1) setCurrentPage(currentPage - 1);
                         }}
-                        isActive={currentPage === page}
-                      >
-                        {page}
-                      </PaginationLink>
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
                     </PaginationItem>
-                  ))}
-                  
-                  <PaginationItem>
-                    <PaginationNext
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-                      }}
-                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
-          )}
+                    
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(page);
+                          }}
+                          isActive={currentPage === page}
+                          className="cursor-pointer"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                        }}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
 
-          {/* Empty State */}
-          {filteredCVs.length === 0 && (
-            <div className="text-center py-12">
-              <FileText className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
-              <p className="text-muted-foreground">No candidates found</p>
-              <p className="text-sm text-muted-foreground">
-                {filterTag !== "all" ? "Try adjusting your filter settings" : "Upload CVs using the box above to get started"}
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            {/* Empty State */}
+            {filteredCVs.length === 0 && (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center py-12">
+                  <FileText className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
+                  <p className="text-muted-foreground">No candidates found</p>
+                  <p className="text-sm text-muted-foreground">
+                    {filterTag !== "all" ? "Try adjusting your filter settings" : "Upload CVs using the box above to get started"}
+                  </p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
     </div>
   );
 };
