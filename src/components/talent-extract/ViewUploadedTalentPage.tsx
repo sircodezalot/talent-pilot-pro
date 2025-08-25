@@ -28,12 +28,12 @@ interface Project {
   name: string;
 }
 
-interface ViewUploadedCVsPageProps {
+interface ViewUploadedTalentPageProps {
   selectedProjectId?: string;
   onBackToProjects: () => void;
 }
 
-export const ViewUploadedCVsPage = ({ selectedProjectId, onBackToProjects }: ViewUploadedCVsPageProps) => {
+export const ViewUploadedTalentPage = ({ selectedProjectId, onBackToProjects }: ViewUploadedTalentPageProps) => {
   const [selectedCVs, setSelectedCVs] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [dragActive, setDragActive] = useState(false);
