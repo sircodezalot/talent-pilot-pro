@@ -16,7 +16,7 @@ import {
   LogOut,
   User,
   LayoutDashboard,
-  FileSearch
+  Briefcase
 } from "lucide-react";
 
 interface DashboardLayoutProps {
@@ -32,9 +32,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   const navigation = [
     { id: "dashboard", name: "Overview", icon: LayoutDashboard },
-    { id: "interviews", name: "Upcoming Interviews", icon: Calendar },
-    { id: "talent-extract", name: "Interview History", icon: FileSearch },
-    { id: "projects", name: "Trial Interviews", icon: FolderOpen },
+    { id: "interviews", name: "Interviews", icon: Calendar },
+    { id: "talent-extract", name: "Projects", icon: Briefcase },
+    { id: "projects", name: "Users", icon: Users },
   ];
 
   const getInitials = (name: string) =>
@@ -46,16 +46,13 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       .toUpperCase();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-xl">
-        <div className="px-8 py-8">
+      <header className="border-b border-border/50 bg-card/50 backdrop-blur-xl shrink-0">
+        <div className="px-6 py-3">
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                Welcome back, {userName}
-              </h1>
-              <p className="text-muted-foreground text-lg">Enterprise Interview Management Platform</p>
+            <div className="text-sm font-medium text-muted-foreground">
+              Enterprise Dashboard
             </div>
             
             {/* Profile Menu */}
@@ -63,61 +60,58 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <PopoverTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  className="flex items-center space-x-3 hover:bg-muted/50 rounded-xl px-4 py-3 h-auto border border-border/50 shadow-sm hover:shadow-md transition-all duration-200"
+                  className="flex items-center space-x-2 hover:bg-muted/50 rounded-lg px-3 py-2 h-auto"
                 >
                   {profileImage ? (
                     <img
                       src={profileImage}
                       alt="Profile"
-                      className="h-10 w-10 rounded-full object-cover border-2 border-primary/20"
+                      className="h-7 w-7 rounded-full object-cover border border-border"
                     />
                   ) : (
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center border-2 border-primary/20 text-base font-bold text-primary shadow-inner">
+                    <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center border border-border text-xs font-semibold text-primary">
                       {getInitials(userName)}
                     </div>
                   )}
-                  <div className="text-left">
-                    <div className="text-sm font-semibold text-foreground">{userName}</div>
-                    <div className="text-xs text-muted-foreground">Administrator</div>
-                  </div>
+                  <span className="text-sm font-medium">{userName}</span>
                 </Button>
               </PopoverTrigger>
-              <PopoverContent align="end" className="w-80 bg-popover/95 border border-border shadow-xl backdrop-blur-xl rounded-xl">
-                <div className="space-y-4">
+              <PopoverContent align="end" className="w-72 bg-popover border border-border shadow-lg backdrop-blur-xl z-50">
+                <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     {profileImage ? (
                       <img
                         src={profileImage}
                         alt="Profile"
-                        className="h-12 w-12 rounded-full object-cover border-2 border-primary/20"
+                        className="h-10 w-10 rounded-full object-cover border border-border"
                       />
                     ) : (
-                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center border-2 border-primary/20 text-lg font-bold text-primary shadow-inner">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border border-border text-sm font-semibold text-primary">
                         {getInitials(userName)}
                       </div>
                     )}
                     <div>
-                      <h3 className="font-bold text-foreground">{userName}</h3>
-                      <p className="text-sm text-muted-foreground">System Administrator</p>
+                      <h3 className="font-semibold text-foreground">{userName}</h3>
+                      <p className="text-xs text-muted-foreground">System Administrator</p>
                     </div>
                   </div>
                   
-                  <div className="border-t border-border/50 pt-3">
-                    <h4 className="text-sm font-semibold text-foreground mb-2">Switch Role</h4>
+                  <div className="border-t border-border pt-2">
+                    <h4 className="text-xs font-medium text-foreground mb-2">Switch Role</h4>
                     <div className="space-y-1">
                       {userRoles.map((role) => (
                         <Button
                           key={role}
                           variant="ghost"
-                          className="w-full justify-start text-left h-auto py-2.5 px-3 hover:bg-muted/60 rounded-lg"
+                          className="w-full justify-start text-left h-auto py-2 px-2 hover:bg-muted/60 text-xs"
                           onClick={() => {
                             console.log(`Switching to role: ${role}`);
                           }}
                         >
                           <div className="flex items-center justify-between w-full">
-                            <span className="text-sm font-medium">{role}</span>
+                            <span>{role}</span>
                             {role === "Admin" && (
-                              <span className="text-xs bg-primary/15 text-primary px-2 py-1 rounded-md font-medium">Current</span>
+                              <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">Current</span>
                             )}
                           </div>
                         </Button>
@@ -125,13 +119,21 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     </div>
                   </div>
 
-                  <div className="border-t border-border/50 pt-3">
+                  <div className="border-t border-border pt-2">
                     <Button 
                       variant="ghost" 
-                      className="w-full justify-start text-destructive hover:bg-destructive/10 rounded-lg"
+                      className="w-full justify-start hover:bg-muted/60 text-xs py-2 px-2"
+                      onClick={() => console.log("Opening settings...")}
+                    >
+                      <Settings className="h-3 w-3 mr-2" />
+                      Settings
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start text-destructive hover:bg-destructive/10 text-xs py-2 px-2"
                       onClick={() => console.log("Signing out...")}
                     >
-                      <LogOut className="h-4 w-4 mr-2" />
+                      <LogOut className="h-3 w-3 mr-2" />
                       Sign Out
                     </Button>
                   </div>
@@ -143,21 +145,21 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
         {/* Navigation Tabs */}
         <div className="px-6">
-          <nav className="flex space-x-8 border-b border-border/30">
+          <nav className="flex space-x-6 border-b border-border/30">
             {navigation.map((item) => {
               const Icon = item.icon;
               return (
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 transition-colors ${
+                  className={`flex items-center space-x-1.5 py-2.5 px-1 border-b-2 transition-colors ${
                     activeTab === item.id
                       ? "border-primary text-primary font-medium"
                       : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/50"
                   }`}
                 >
-                  <Icon className="h-4 w-4" />
-                  <span className="text-sm">{item.name}</span>
+                  <Icon className="h-3.5 w-3.5" />
+                  <span className="text-xs">{item.name}</span>
                 </button>
               );
             })}
@@ -166,12 +168,12 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       </header>
 
       {/* Main content */}
-      <main className="flex-1">
-        <div className="px-6 py-6">
-          {activeTab === "dashboard" && children}
-          {activeTab === "interviews" && <InterviewsPage />}
-          {activeTab === "talent-extract" && <TalentExtractPage />}
-          {activeTab === "projects" && <div className="text-center py-12 text-muted-foreground">Trial Interviews page coming soon...</div>}
+      <main className="flex-1 overflow-hidden">
+        <div className="h-full px-6 py-4">
+          {activeTab === "dashboard" && <div className="h-full">{children}</div>}
+          {activeTab === "interviews" && <div className="h-full"><InterviewsPage /></div>}
+          {activeTab === "talent-extract" && <div className="h-full"><TalentExtractPage /></div>}
+          {activeTab === "projects" && <div className="h-full flex items-center justify-center"><div className="text-center text-muted-foreground">Users page coming soon...</div></div>}
         </div>
       </main>
     </div>
