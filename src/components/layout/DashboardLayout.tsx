@@ -29,7 +29,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const userName = "John Smith";
   const profileImage = "";
   const userRoles = ["Admin", "HR Manager", "Interview Coordinator"];
-  const profileCompleteness = 85;
 
   const navigation = [
     { id: "dashboard", name: "Overview", icon: LayoutDashboard },
@@ -50,98 +49,95 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/50 backdrop-blur-xl">
-        <div className="px-6 py-6">
+        <div className="px-8 py-8">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Welcome back, {userName}</h1>
-              <p className="text-muted-foreground mt-1">Manage your interviews and track your progress</p>
+            <div className="space-y-1">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                Welcome back, {userName}
+              </h1>
+              <p className="text-muted-foreground text-lg">Enterprise Interview Management Platform</p>
             </div>
             
-            <div className="flex items-center space-x-6">
-              {/* Profile Completeness */}
-              <div className="text-right">
-                <p className="text-sm text-muted-foreground mb-1">Profile Completeness</p>
-                <div className="flex items-center space-x-3">
-                  <Progress value={profileCompleteness} className="w-24 h-2" />
-                  <span className="text-sm font-semibold text-primary">{profileCompleteness}%</span>
-                </div>
-              </div>
-
-              {/* Profile Menu */}
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-3 hover:bg-muted/60">
+            {/* Profile Menu */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="flex items-center space-x-3 hover:bg-muted/50 rounded-xl px-4 py-3 h-auto border border-border/50 shadow-sm hover:shadow-md transition-all duration-200"
+                >
+                  {profileImage ? (
+                    <img
+                      src={profileImage}
+                      alt="Profile"
+                      className="h-10 w-10 rounded-full object-cover border-2 border-primary/20"
+                    />
+                  ) : (
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center border-2 border-primary/20 text-base font-bold text-primary shadow-inner">
+                      {getInitials(userName)}
+                    </div>
+                  )}
+                  <div className="text-left">
+                    <div className="text-sm font-semibold text-foreground">{userName}</div>
+                    <div className="text-xs text-muted-foreground">Administrator</div>
+                  </div>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-80 bg-popover/95 border border-border shadow-xl backdrop-blur-xl rounded-xl">
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
                     {profileImage ? (
                       <img
                         src={profileImage}
                         alt="Profile"
-                        className="h-8 w-8 rounded-full object-cover border border-border"
+                        className="h-12 w-12 rounded-full object-cover border-2 border-primary/20"
                       />
                     ) : (
-                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center border border-border text-sm font-semibold text-primary">
+                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center border-2 border-primary/20 text-lg font-bold text-primary shadow-inner">
                         {getInitials(userName)}
                       </div>
                     )}
-                    <span className="text-sm font-medium">{userName}</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent align="end" className="w-80 bg-popover border border-border shadow-lg backdrop-blur-xl">
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      {profileImage ? (
-                        <img
-                          src={profileImage}
-                          alt="Profile"
-                          className="h-12 w-12 rounded-full object-cover border border-border"
-                        />
-                      ) : (
-                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center border border-border text-lg font-semibold text-primary">
-                          {getInitials(userName)}
-                        </div>
-                      )}
-                      <div>
-                        <h3 className="font-semibold text-foreground">{userName}</h3>
-                        <p className="text-sm text-muted-foreground">Administrator</p>
-                      </div>
-                    </div>
-                    
-                    <div className="border-t border-border pt-3">
-                      <h4 className="text-sm font-medium text-foreground mb-2">Switch Role</h4>
-                      <div className="space-y-1">
-                        {userRoles.map((role) => (
-                          <Button
-                            key={role}
-                            variant="ghost"
-                            className="w-full justify-start text-left h-auto py-2 px-3 hover:bg-muted/60"
-                            onClick={() => {
-                              console.log(`Switching to role: ${role}`);
-                            }}
-                          >
-                            <div className="flex items-center justify-between w-full">
-                              <span className="text-sm">{role}</span>
-                              {role === "Admin" && (
-                                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">Current</span>
-                              )}
-                            </div>
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="border-t border-border pt-3">
-                      <Button 
-                        variant="ghost" 
-                        className="w-full justify-start text-destructive hover:bg-destructive/10"
-                        onClick={() => console.log("Signing out...")}
-                      >
-                        <LogOut className="h-4 w-4 mr-2" />
-                        Sign Out
-                      </Button>
+                    <div>
+                      <h3 className="font-bold text-foreground">{userName}</h3>
+                      <p className="text-sm text-muted-foreground">System Administrator</p>
                     </div>
                   </div>
-                </PopoverContent>
-              </Popover>
-            </div>
+                  
+                  <div className="border-t border-border/50 pt-3">
+                    <h4 className="text-sm font-semibold text-foreground mb-2">Switch Role</h4>
+                    <div className="space-y-1">
+                      {userRoles.map((role) => (
+                        <Button
+                          key={role}
+                          variant="ghost"
+                          className="w-full justify-start text-left h-auto py-2.5 px-3 hover:bg-muted/60 rounded-lg"
+                          onClick={() => {
+                            console.log(`Switching to role: ${role}`);
+                          }}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-sm font-medium">{role}</span>
+                            {role === "Admin" && (
+                              <span className="text-xs bg-primary/15 text-primary px-2 py-1 rounded-md font-medium">Current</span>
+                            )}
+                          </div>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="border-t border-border/50 pt-3">
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start text-destructive hover:bg-destructive/10 rounded-lg"
+                      onClick={() => console.log("Signing out...")}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
