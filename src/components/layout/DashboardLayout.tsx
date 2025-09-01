@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { InterviewsPage } from "@/components/interviews/InterviewsPage";
 import { TalentExtractPage } from "@/components/talent-extract/TalentExtractPage";
+import { Progress } from "@/components/ui/progress";
 import {
   Popover,
   PopoverContent,
@@ -13,9 +14,7 @@ import {
   Calendar,
   Settings,
   LogOut,
-  X,
   User,
-  ChevronRight,
   LayoutDashboard,
   FileSearch
 } from "lucide-react";
@@ -26,20 +25,17 @@ interface DashboardLayoutProps {
 
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarHovered, setSidebarHovered] = useState(false);
 
-  const userName = "John Doe";
+  const userName = "John Smith";
   const profileImage = "";
   const userRoles = ["Admin", "HR Manager", "Interview Coordinator"];
+  const profileCompleteness = 85;
 
   const navigation = [
-    { id: "dashboard", name: "Dashboard", icon: LayoutDashboard },
-    { id: "projects", name: "Projects", icon: FolderOpen },
-    { id: "interviews", name: "Interviews", icon: Calendar },
-    { id: "talent-extract", name: "Talent Extract", icon: FileSearch },
-    { id: "users", name: "Enterprise Users", icon: Users },
-    { id: "settings", name: "Settings", icon: Settings },
+    { id: "dashboard", name: "Overview", icon: LayoutDashboard },
+    { id: "interviews", name: "Upcoming Interviews", icon: Calendar },
+    { id: "talent-extract", name: "Interview History", icon: FileSearch },
+    { id: "projects", name: "Trial Interviews", icon: FolderOpen },
   ];
 
   const getInitials = (name: string) =>
@@ -51,198 +47,137 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       .toUpperCase();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
-      {/* Mobile sidebar backdrop */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden transition-all duration-400"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-border/50 bg-card/50 backdrop-blur-xl">
+        <div className="px-6 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Welcome back, {userName}</h1>
+              <p className="text-muted-foreground mt-1">Manage your interviews and track your progress</p>
+            </div>
+            
+            <div className="flex items-center space-x-6">
+              {/* Profile Completeness */}
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground mb-1">Profile Completeness</p>
+                <div className="flex items-center space-x-3">
+                  <Progress value={profileCompleteness} className="w-24 h-2" />
+                  <span className="text-sm font-semibold text-primary">{profileCompleteness}%</span>
+                </div>
+              </div>
 
-      {/* Sidebar */}
-      <div className={`
-        fixed inset-y-0 left-0 z-50 
-        ${sidebarHovered ? "w-64" : "w-16"} 
-        bg-card/95 backdrop-blur-xl border-r border-border/50 shadow-elegant transform transition-[width,transform] duration-500 ease-in-out
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:inset-0`}
-
-        onMouseEnter={() => setSidebarHovered(true)}
-        onMouseLeave={() => setSidebarHovered(false)}
-      >
-        <div className={`mt-10 h-16 ${sidebarHovered ? "px-6 flex items-center" : "px-2"} duration-500 gap-4`}>
-          {/* Logo Icon */}
-          <div
-            className={`flex items-center justify-center transition-all duration-500 ${sidebarHovered ? "h-14 w-14" : "h-14"}`}
-          >
-            <img
-              src="/images/logo_icon.png"
-              alt="Logo Icon"
-              className="object-contain h-full w-full"
-            />
-          </div>
-
-          {/* Logo Text */}
-          <h1
-            className={`
-              flex items-center bg-gradient-primary bg-clip-text text-transparent ease-in-out
-              ${sidebarHovered ? "opacity-100" : "opacity-0"} h-8
-            `}
-          >
-            <img
-              src="/images/logo_text.png"
-              alt="Logo Text"
-              className="h-16 object-contain"
-            />
-          </h1>
-
-          {/* Close Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
-
-
-        <nav className={`${sidebarHovered ? "p-4" : "p-3"} mt-5 space-y-1 transition-[padding] duration-500 ease-in-out`}>
-          {navigation.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Button
-                key={item.id}
-                variant={activeTab === item.id ? "secondary" : "ghost"}
-                className={`
-                  w-full justify-start px-2 transition-all duration-500 ease-in-out
-                  ${sidebarHovered ? "pl-6" : "pl-3"} ${activeTab === item.id
-                    ? "bg-gradient-primary text-primary-foreground shadow-elegant hover:shadow-hover"
-                    : "hover:bg-muted/60 hover:translate-x-1"
-                  }
-                `}
-                onClick={() => setActiveTab(item.id)}
-              >
-                <Icon className="mr-3 h-4 w-4" />
-                {sidebarHovered && (
-                  <span className={`
-                    ml-3 text-sm font-medium ease-in-out duration-300 ${sidebarHovered ? "opacity-100" : "opacity-0"}
-                  `}
-                    style={{ width: sidebarHovered ? "auto" : 0, overflow: "hidden", whiteSpace: "nowrap" }}
-                  >
-                    {item.name}
-                  </span>
-                )}
-              </Button>
-            );
-          })}
-        </nav>
-
-        <div className={`absolute bottom-4 transition-all duration-500 ease-in-out ${sidebarHovered ? "left-4 right-4" : "left-2 right-2"}`}>
-          {/* Profile Button */}
-          <div className={`mb-2 ${sidebarHovered ? "" : "mx-1"}`}>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" className={`w-full justify-start ${sidebarHovered ? "" : "p-3"}`}>
-                  <User className={`h-4 w-4`} />
-                  <span className={`ml-3 transition-opacity duration-200 ease-in-out ${sidebarHovered ? "opacity-100" : "opacity-0"}`}>
-                    Profile
-                  </span>
-                  {sidebarHovered && <ChevronRight className="ml-auto h-4 w-4" />}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent side="right" className="w-80 bg-popover border border-border shadow-lg backdrop-blur-xl">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
+              {/* Profile Menu */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" className="flex items-center space-x-3 hover:bg-muted/60">
                     {profileImage ? (
                       <img
                         src={profileImage}
                         alt="Profile"
-                        className="h-12 w-12 rounded-full object-cover border border-border"
+                        className="h-8 w-8 rounded-full object-cover border border-border"
                       />
                     ) : (
-                      <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center border border-border text-lg font-semibold text-primary">
+                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center border border-border text-sm font-semibold text-primary">
                         {getInitials(userName)}
                       </div>
                     )}
-                    <div>
-                      <h3 className="font-semibold text-foreground">{userName}</h3>
-                      <p className="text-sm text-muted-foreground">Administrator</p>
+                    <span className="text-sm font-medium">{userName}</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-80 bg-popover border border-border shadow-lg backdrop-blur-xl">
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-3">
+                      {profileImage ? (
+                        <img
+                          src={profileImage}
+                          alt="Profile"
+                          className="h-12 w-12 rounded-full object-cover border border-border"
+                        />
+                      ) : (
+                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center border border-border text-lg font-semibold text-primary">
+                          {getInitials(userName)}
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="font-semibold text-foreground">{userName}</h3>
+                        <p className="text-sm text-muted-foreground">Administrator</p>
+                      </div>
+                    </div>
+                    
+                    <div className="border-t border-border pt-3">
+                      <h4 className="text-sm font-medium text-foreground mb-2">Switch Role</h4>
+                      <div className="space-y-1">
+                        {userRoles.map((role) => (
+                          <Button
+                            key={role}
+                            variant="ghost"
+                            className="w-full justify-start text-left h-auto py-2 px-3 hover:bg-muted/60"
+                            onClick={() => {
+                              console.log(`Switching to role: ${role}`);
+                            }}
+                          >
+                            <div className="flex items-center justify-between w-full">
+                              <span className="text-sm">{role}</span>
+                              {role === "Admin" && (
+                                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">Current</span>
+                              )}
+                            </div>
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="border-t border-border pt-3">
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start text-destructive hover:bg-destructive/10"
+                        onClick={() => console.log("Signing out...")}
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </Button>
                     </div>
                   </div>
-                  
-                  <div className="border-t border-border pt-3">
-                    <h4 className="text-sm font-medium text-foreground mb-2">Switch Role</h4>
-                    <div className="space-y-1">
-                      {userRoles.map((role) => (
-                        <Button
-                          key={role}
-                          variant="ghost"
-                          className="w-full justify-start text-left h-auto py-2 px-3 hover:bg-muted/60"
-                          onClick={() => {
-                            // Role switching logic would go here
-                            console.log(`Switching to role: ${role}`);
-                          }}
-                        >
-                          <div className="flex items-center justify-between w-full">
-                            <span className="text-sm">{role}</span>
-                            {role === "Admin" && (
-                              <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">Current</span>
-                            )}
-                          </div>
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          {/* Sign Out Button */}
-          <div className={`${sidebarHovered ? "" : "mx-1"}`}>
-            <Button variant="outline" className={`w-full justify-start ${sidebarHovered ? "" : "p-3"}`}>
-              <LogOut className={`h-4 w-4`} />
-              <span className={`ml-3 transition-opacity duration-200 ease-in-out ${sidebarHovered ? "opacity-100" : "opacity-0"}`}>
-                Sign Out
-              </span>
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main content */}
-      <div className={`transition-[padding] duration-500 ease-in-out ${sidebarHovered ? "lg:pl-64" : "lg:pl-16"}`}>
-        {/* Top bar */}
-        {/* <div className="flex items-center justify-between h-16 px-6 lg:px-8">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden hover:bg-muted/80 transition-colors"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-3">
-              <div className="h-8 w-8 rounded-full bg-gradient-primary animate-glow"></div>
-              <span className="text-sm font-medium">Welcome back, Admin</span>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
-        </div> */}
+        </div>
 
-        {/* Page content */}
-        <main className="px-6 py-3">
+        {/* Navigation Tabs */}
+        <div className="px-6">
+          <nav className="flex space-x-8 border-b border-border/30">
+            {navigation.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 transition-colors ${
+                    activeTab === item.id
+                      ? "border-primary text-primary font-medium"
+                      : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/50"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="text-sm">{item.name}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      </header>
+
+      {/* Main content */}
+      <main className="flex-1">
+        <div className="px-6 py-6">
           {activeTab === "dashboard" && children}
           {activeTab === "interviews" && <InterviewsPage />}
           {activeTab === "talent-extract" && <TalentExtractPage />}
-          {activeTab === "projects" && <div>Projects page coming soon...</div>}
-          {activeTab === "users" && <div>Enterprise Users page coming soon...</div>}
-          {activeTab === "settings" && <div>Settings page coming soon...</div>}
-        </main>
-      </div>
+          {activeTab === "projects" && <div className="text-center py-12 text-muted-foreground">Trial Interviews page coming soon...</div>}
+        </div>
+      </main>
     </div>
   );
 };
