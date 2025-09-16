@@ -48,6 +48,16 @@ const formSchema = z.object({
   resume: z.any().refine((file) => file, "Resume is required"),
   phone: z.string().optional(),
   notifyOnExpiration: z.boolean().optional(),
+  categories: z.array(z.object({
+    name: z.string().min(1, "Category name is required"),
+    weightage: z.number().min(1, "Weightage must be at least 1").max(100, "Weightage cannot exceed 100")
+  })).optional().refine((categories) => {
+    if (!categories || categories.length === 0) return true;
+    const totalWeightage = categories.reduce((sum, cat) => sum + cat.weightage, 0);
+    return totalWeightage === 100;
+  }, {
+    message: "Total weightage must equal 100%"
+  }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -78,6 +88,7 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
   const [projectSearch, setProjectSearch] = useState("");
   const { toast } = useToast();
   const [triggerRef, setTriggerRef] = useState<HTMLButtonElement | null>(null);
+  const [categories, setCategories] = useState<Array<{ name: string; weightage: number }>>([]);
 
   // Filter projects based on search or show latest 5 by default
   const filteredProjects = useMemo(() => {
@@ -98,6 +109,7 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
       lastName: "",
       email: "",
       phone: "",
+      categories: [],
     },
   });
 
@@ -162,9 +174,33 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
     });
   };
 
+  const addCategory = () => {
+    const newCategories = [...categories, { name: "", weightage: 0 }];
+    setCategories(newCategories);
+    form.setValue("categories", newCategories);
+  };
+
+  const removeCategory = (index: number) => {
+    const newCategories = categories.filter((_, i) => i !== index);
+    setCategories(newCategories);
+    form.setValue("categories", newCategories);
+  };
+
+  const updateCategory = (index: number, field: 'name' | 'weightage', value: string | number) => {
+    const newCategories = [...categories];
+    newCategories[index] = { ...newCategories[index], [field]: value };
+    setCategories(newCategories);
+    form.setValue("categories", newCategories);
+  };
+
+  const getTotalWeightage = () => {
+    return categories.reduce((sum, cat) => sum + (cat.weightage || 0), 0);
+  };
+
   const handleReset = () => {
     form.reset();
     setSelectedFile(null);
+    setCategories([]);
   };
 
   const handleClose = () => {
@@ -172,6 +208,7 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
     // Reset form when closing
     form.reset();
     setSelectedFile(null);
+    setCategories([]);
   };
 
   return (
@@ -407,6 +444,94 @@ export const ScheduleInterviewForm = ({ onSchedule }: ScheduleInterviewFormProps
                 </FormItem>
               )}
             />
+
+            {/* Interview Categories */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <FormLabel className="text-primary/80 font-medium">Interview Categories</FormLabel>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Add categories with weightages for targeted interview questions. Leave blank for AI-generated categories.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addCategory}
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Category
+                </Button>
+              </div>
+
+              {categories.length > 0 && (
+                <div className="space-y-3">
+                  {categories.map((category, index) => (
+                    <div key={index} className="flex items-center gap-3 p-3 border border-primary/20 rounded-md bg-primary/5">
+                      <div className="flex-1">
+                        <Input
+                          placeholder="Category name (e.g., Technical Skills)"
+                          value={category.name}
+                          onChange={(e) => updateCategory(index, 'name', e.target.value)}
+                          className="border-primary/30"
+                        />
+                      </div>
+                      <div className="w-24">
+                        <Input
+                          type="number"
+                          placeholder="Weight"
+                          min="1"
+                          max="100"
+                          value={category.weightage || ''}
+                          onChange={(e) => updateCategory(index, 'weightage', parseInt(e.target.value) || 0)}
+                          className="border-primary/30"
+                        />
+                      </div>
+                      <div className="text-sm text-muted-foreground">%</div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeCategory(index)}
+                        className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+
+                  {categories.length > 0 && (
+                    <div className="flex items-center justify-between p-3 bg-secondary/20 rounded-md border border-secondary/30">
+                      <span className="text-sm font-medium">Total Weightage:</span>
+                      <span className={cn(
+                        "text-sm font-bold",
+                        getTotalWeightage() === 100 ? "text-green-600" : "text-destructive"
+                      )}>
+                        {getTotalWeightage()}%
+                      </span>
+                    </div>
+                  )}
+                  
+                  {categories.length > 0 && getTotalWeightage() !== 100 && (
+                    <p className="text-destructive text-sm">
+                      Total weightage must equal 100% to proceed with scheduling.
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <FormField
+                control={form.control}
+                name="categories"
+                render={() => (
+                  <FormItem>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             {/* Advanced Configurations */}
             <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
