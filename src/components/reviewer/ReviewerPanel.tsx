@@ -12,6 +12,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Slider } from "@/components/ui/slider";
+import {
   Table,
   TableBody,
   TableCell,
@@ -41,7 +48,10 @@ import {
   Download,
   Calendar,
   Timer,
-  ChevronDown
+  ChevronDown,
+  Pause,
+  X,
+  Volume2
 } from "lucide-react";
 
 interface Interview {
@@ -296,6 +306,11 @@ export const ReviewerPanel = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(15);
+  const [videoModalOpen, setVideoModalOpen] = useState<boolean>(false);
+  const [selectedVideo, setSelectedVideo] = useState<{ id: string; name: string } | null>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [duration, setDuration] = useState<number>(100); // Mock duration in seconds
 
   // Get unique projects for the dropdown
   const uniqueProjects = Array.from(new Set(mockInterviews.map(i => i.project)));
@@ -329,8 +344,31 @@ export const ReviewerPanel = () => {
   };
 
   const handlePlayVideo = (interviewId: string, candidateName: string) => {
-    console.log(`Playing video for interview ${interviewId} (${candidateName})`);
-    // In real implementation, this would open video player
+    setSelectedVideo({ id: interviewId, name: candidateName });
+    setVideoModalOpen(true);
+    setCurrentTime(0);
+    setIsPlaying(false);
+  };
+
+  const handleCloseVideo = () => {
+    setVideoModalOpen(false);
+    setSelectedVideo(null);
+    setIsPlaying(false);
+    setCurrentTime(0);
+  };
+
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleTimeChange = (value: number[]) => {
+    setCurrentTime(value[0]);
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const handleViewReport = (interviewId: string, candidateName: string) => {
@@ -471,11 +509,10 @@ export const ReviewerPanel = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 px-2"
+                              className="h-8 w-8 p-0"
                               onClick={() => handlePlayVideo(interview.id, interview.candidateName)}
                             >
-                              <Play className="h-3 w-3 mr-1" />
-                              <span className="text-xs">Play</span>
+                              <Play className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
@@ -492,11 +529,10 @@ export const ReviewerPanel = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 px-2"
+                              className="h-8 w-8 p-0"
                               onClick={() => handleViewReport(interview.id, interview.candidateName)}
                             >
-                              <FileText className="h-3 w-3 mr-1" />
-                              <span className="text-xs">Report</span>
+                              <FileText className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
@@ -587,6 +623,93 @@ export const ReviewerPanel = () => {
             </div>
           )}
         </Card>
+
+        {/* Video Modal */}
+        <Dialog open={videoModalOpen} onOpenChange={handleCloseVideo}>
+          <DialogContent className="max-w-4xl w-full">
+            <DialogHeader>
+              <DialogTitle className="flex items-center justify-between">
+                <span>Interview Video - {selectedVideo?.name}</span>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleCloseVideo}
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              {/* Mock Video Player */}
+              <div className="relative bg-black rounded-lg aspect-video">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-white text-lg">
+                    Mock Video Player - Interview {selectedVideo?.id}
+                  </div>
+                </div>
+                
+                {/* Video Controls Overlay */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                  <div className="space-y-3">
+                    {/* Timeline Slider */}
+                    <div className="flex items-center gap-3 text-white text-sm">
+                      <span>{formatTime(currentTime)}</span>
+                      <div className="flex-1">
+                        <Slider
+                          value={[currentTime]}
+                          onValueChange={handleTimeChange}
+                          max={duration}
+                          min={0}
+                          step={1}
+                          className="w-full"
+                        />
+                      </div>
+                      <span>{formatTime(duration)}</span>
+                    </div>
+                    
+                    {/* Control Buttons */}
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handlePlayPause}
+                        className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                      >
+                        {isPlaying ? (
+                          <Pause className="h-4 w-4" />
+                        ) : (
+                          <Play className="h-4 w-4" />
+                        )}
+                      </Button>
+                      
+                      <div className="flex items-center gap-1">
+                        <Volume2 className="h-4 w-4 text-white" />
+                        <Slider
+                          defaultValue={[50]}
+                          max={100}
+                          min={0}
+                          step={1}
+                          className="w-20"
+                        />
+                      </div>
+                      
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDownload("video", selectedVideo?.id || "", selectedVideo?.name || "")}
+                        className="h-8 w-8 p-0 text-white hover:bg-white/20 ml-auto"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   };
