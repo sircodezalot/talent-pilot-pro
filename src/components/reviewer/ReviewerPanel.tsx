@@ -37,7 +37,11 @@ import {
   AlertCircle,
   Play,
   User,
-  Search
+  Search,
+  Download,
+  Eye,
+  Calendar,
+  Timer
 } from "lucide-react";
 
 interface Interview {
@@ -311,8 +315,31 @@ export const ReviewerPanel = () => {
   const endIndex = startIndex + itemsPerPage;
   const paginatedInterviews = filteredInterviews.slice(startIndex, endIndex);
 
+  const formatDateTime = (dateString: string, timezone: string = "Asia/Colombo") => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: timezone,
+      timeZoneName: 'short'
+    };
+    return date.toLocaleString('en-US', options);
+  };
+
+  const handlePlayVideo = (interviewId: string, candidateName: string) => {
+    console.log(`Playing video for interview ${interviewId} (${candidateName})`);
+    // In real implementation, this would open video player
+  };
+
+  const handleViewReport = (interviewId: string, candidateName: string) => {
+    console.log(`Viewing report for interview ${interviewId} (${candidateName})`);
+    // In real implementation, this would open report viewer
+  };
+
   const handleDownload = (type: string, interviewId: string, candidateName: string) => {
-    // Mock download functionality
     console.log(`Downloading ${type} for interview ${interviewId} (${candidateName})`);
     // In real implementation, this would trigger file download
   };
@@ -322,92 +349,93 @@ export const ReviewerPanel = () => {
   };
 
   return (
-    <div className="h-full flex flex-col space-y-6">
+    <div className="h-full flex flex-col space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Reviewer Panel</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Interview Review Center</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Download interview recordings, screencaptures, and result sheets
+          Review, play, and download interview recordings and assessment reports
         </p>
       </div>
 
       {/* Interviews Table */}
-      <Card className="flex-1 overflow-hidden">
-        <CardHeader className="pb-3">
+      <Card className="flex-1 flex flex-col overflow-hidden">
+        <CardHeader className="pb-3 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-base">Interview Records</CardTitle>
               <CardDescription>
-                Showing {filteredInterviews.length} of {mockInterviews.length} interviews
+                Showing {paginatedInterviews.length} of {filteredInterviews.length} interviews
               </CardDescription>
             </div>
           </div>
           
-            {/* Search and Filters */}
-            <div className="flex items-center gap-4 mt-4">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by candidate name..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8"
-                />
-              </div>
-              
-              <Select value={selectedProject} onValueChange={setSelectedProject}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Filter by project" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Projects</SelectItem>
-                  {uniqueProjects.map((project) => (
-                    <SelectItem key={project} value={project}>
-                      {project}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              
-              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="in-progress">In Progress</SelectItem>
-                  <SelectItem value="terminated">Terminated</SelectItem>
-                  <SelectItem value="forfeited">Forfeited</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={itemsPerPage.toString()} onValueChange={(value) => {
-                setItemsPerPage(parseInt(value));
-                setCurrentPage(1);
-              }}>
-                <SelectTrigger className="w-20">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="15">15</SelectItem>
-                  <SelectItem value="30">30</SelectItem>
-                  <SelectItem value="45">45</SelectItem>
-                  <SelectItem value="60">60</SelectItem>
-                </SelectContent>
-              </Select>
+          {/* Search and Filters */}
+          <div className="flex items-center gap-4 mt-4">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by candidate name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-8"
+              />
             </div>
+            
+            <Select value={selectedProject} onValueChange={setSelectedProject}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filter by project" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Projects</SelectItem>
+                {uniqueProjects.map((project) => (
+                  <SelectItem key={project} value={project}>
+                    {project}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="in-progress">In Progress</SelectItem>
+                <SelectItem value="terminated">Terminated</SelectItem>
+                <SelectItem value="forfeited">Forfeited</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={itemsPerPage.toString()} onValueChange={(value) => {
+              setItemsPerPage(parseInt(value));
+              setCurrentPage(1);
+            }}>
+              <SelectTrigger className="w-20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="15">15</SelectItem>
+                <SelectItem value="30">30</SelectItem>
+                <SelectItem value="45">45</SelectItem>
+                <SelectItem value="60">60</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-auto max-h-[400px]">
+        <CardContent className="p-0 flex-1 flex flex-col overflow-hidden">
+          <div className="overflow-auto flex-1">
+            <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Candidate</TableHead>
-                  <TableHead>Project</TableHead>
-                  <TableHead>Interview Timeline</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>Downloads</TableHead>
+                  <TableHead className="w-[200px]">Candidate</TableHead>
+                  <TableHead className="w-[250px]">Project</TableHead>
+                  <TableHead className="w-[300px]">Interview Timeline</TableHead>
+                  <TableHead className="w-[120px]">Status</TableHead>
+                  <TableHead className="w-[100px]">Score</TableHead>
+                  <TableHead className="w-[160px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -418,9 +446,9 @@ export const ReviewerPanel = () => {
                         <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                           <User className="h-4 w-4 text-primary" />
                         </div>
-                        <div>
-                          <div className="font-medium text-sm">{interview.candidateName}</div>
-                          <div className="text-xs text-muted-foreground">{interview.candidateEmail}</div>
+                        <div className="min-w-0">
+                          <div className="font-medium text-sm truncate">{interview.candidateName}</div>
+                          <div className="text-xs text-muted-foreground truncate">{interview.candidateEmail}</div>
                         </div>
                       </div>
                     </TableCell>
@@ -428,13 +456,25 @@ export const ReviewerPanel = () => {
                       <div className="text-sm">{interview.project}</div>
                     </TableCell>
                     <TableCell>
-                      <div className="text-sm space-y-1">
-                        <div>Start: {new Date(interview.interviewStartTime).toLocaleString()}</div>
-                        <div>End: {new Date(interview.interviewEndTime).toLocaleString()}</div>
+                      <div className="space-y-2">
+                        <div className="bg-muted/50 rounded-lg p-2 space-y-1">
+                          <div className="flex items-center gap-1 text-xs">
+                            <Calendar className="h-3 w-3 text-muted-foreground" />
+                            <span className="font-medium">Interview Window</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Start: {formatDateTime(interview.interviewStartTime)}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            End: {formatDateTime(interview.interviewEndTime)}
+                          </div>
+                        </div>
                         {interview.attemptedAt && (
-                          <div className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            Attempted: {new Date(interview.attemptedAt).toLocaleString()}
+                          <div className="flex items-center gap-1 text-xs bg-blue-50 dark:bg-blue-950/30 p-1.5 rounded">
+                            <Timer className="h-3 w-3 text-blue-500" />
+                            <span className="text-blue-700 dark:text-blue-300">
+                              Attempted: {formatDateTime(interview.attemptedAt)}
+                            </span>
                           </div>
                         )}
                       </div>
@@ -446,7 +486,7 @@ export const ReviewerPanel = () => {
                       {interview.score ? (
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium">{interview.score}%</span>
-                          <Progress value={interview.score} className="w-16 h-2" />
+                          <Progress value={interview.score} className="w-12 h-2" />
                         </div>
                       ) : (
                         <span className="text-sm text-muted-foreground">-</span>
@@ -455,24 +495,44 @@ export const ReviewerPanel = () => {
                     <TableCell>
                       <div className="flex items-center gap-1">
                         {interview.hasVideo && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={() => handleDownload("video", interview.id, interview.candidateName)}
-                          >
-                            <Video className="h-4 w-4" />
-                          </Button>
+                          <div className="flex items-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => handlePlayVideo(interview.id, interview.candidateName)}
+                            >
+                              <Play className="h-4 w-4 text-blue-600" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleDownload("video", interview.id, interview.candidateName)}
+                            >
+                              <Download className="h-3 w-3 text-muted-foreground" />
+                            </Button>
+                          </div>
                         )}
                         {interview.hasResultSheet && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={() => handleDownload("result-sheet", interview.id, interview.candidateName)}
-                          >
-                            <FileText className="h-4 w-4" />
-                          </Button>
+                          <div className="flex items-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleViewReport(interview.id, interview.candidateName)}
+                            >
+                              <Eye className="h-4 w-4 text-green-600" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleDownload("report", interview.id, interview.candidateName)}
+                            >
+                              <Download className="h-3 w-3 text-muted-foreground" />
+                            </Button>
+                          </div>
                         )}
                         {!interview.hasVideo && !interview.hasResultSheet && (
                           <span className="text-xs text-muted-foreground">No files</span>
@@ -482,12 +542,13 @@ export const ReviewerPanel = () => {
                   </TableRow>
                 ))}
               </TableBody>
-            </div>
-          </CardContent>
+            </Table>
+          </div>
+        </CardContent>
           
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-6 py-3 border-t">
+            <div className="flex items-center justify-between px-6 py-3 border-t flex-shrink-0">
               <div className="text-sm text-muted-foreground">
                 Showing {startIndex + 1} to {Math.min(endIndex, filteredInterviews.length)} of {filteredInterviews.length} results
               </div>
