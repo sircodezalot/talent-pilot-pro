@@ -505,44 +505,24 @@ export const ReviewerPanel = () => {
                     <TableCell>
                       <div className="flex items-center gap-1">
                         {interview.hasVideo && (
-                          <div className="flex items-center gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                              onClick={() => handlePlayVideo(interview.id, interview.candidateName)}
-                            >
-                              <Play className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                              onClick={() => handleDownload("video", interview.id, interview.candidateName)}
-                            >
-                              <Download className="h-3 w-3 text-muted-foreground" />
-                            </Button>
-                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() => handlePlayVideo(interview.id, interview.candidateName)}
+                          >
+                            <Play className="h-4 w-4" />
+                          </Button>
                         )}
                         {interview.hasResultSheet && (
-                          <div className="flex items-center gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                              onClick={() => handleViewReport(interview.id, interview.candidateName)}
-                            >
-                              <FileText className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                              onClick={() => handleDownload("report", interview.id, interview.candidateName)}
-                            >
-                              <Download className="h-3 w-3 text-muted-foreground" />
-                            </Button>
-                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() => handleViewReport(interview.id, interview.candidateName)}
+                          >
+                            <FileText className="h-4 w-4" />
+                          </Button>
                         )}
                         {!interview.hasVideo && !interview.hasResultSheet && (
                           <span className="text-xs text-muted-foreground">No files</span>
