@@ -2,8 +2,15 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -13,7 +20,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Download,
   Video,
   Mic,
   Monitor,
@@ -24,8 +30,7 @@ import {
   AlertCircle,
   Play,
   User,
-  Calendar,
-  Filter
+  Search
 } from "lucide-react";
 
 interface Interview {
@@ -146,22 +151,25 @@ const getStatusBadge = (status: Interview["status"]) => {
 
 export const ReviewerPanel = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedProject, setSelectedProject] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const filteredInterviews = selectedStatus === "all" 
-    ? mockInterviews 
-    : mockInterviews.filter(interview => interview.status === selectedStatus);
+  // Get unique projects for the dropdown
+  const uniqueProjects = Array.from(new Set(mockInterviews.map(i => i.project)));
+
+  const filteredInterviews = mockInterviews.filter(interview => {
+    const matchesStatus = selectedStatus === "all" || interview.status === selectedStatus;
+    const matchesProject = selectedProject === "all" || interview.project === selectedProject;
+    const matchesSearch = searchTerm === "" || 
+      interview.candidateName.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    return matchesStatus && matchesProject && matchesSearch;
+  });
 
   const handleDownload = (type: string, interviewId: string, candidateName: string) => {
     // Mock download functionality
     console.log(`Downloading ${type} for interview ${interviewId} (${candidateName})`);
     // In real implementation, this would trigger file download
-  };
-
-  const downloadStats = {
-    totalInterviews: mockInterviews.length,
-    completedInterviews: mockInterviews.filter(i => i.status === "completed").length,
-    availableRecordings: mockInterviews.filter(i => i.hasAudio || i.hasVideo).length,
-    availableResults: mockInterviews.filter(i => i.hasResultSheet).length
   };
 
   return (
@@ -174,82 +182,6 @@ export const ReviewerPanel = () => {
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold">{downloadStats.totalInterviews}</p>
-                <p className="text-xs text-muted-foreground">Total Interviews</p>
-              </div>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold">{downloadStats.completedInterviews}</p>
-                <p className="text-xs text-muted-foreground">Completed</p>
-              </div>
-              <CheckCircle className="h-4 w-4 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold">{downloadStats.availableRecordings}</p>
-                <p className="text-xs text-muted-foreground">Available Recordings</p>
-              </div>
-              <Video className="h-4 w-4 text-muted-foreground" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold">{downloadStats.availableResults}</p>
-                <p className="text-xs text-muted-foreground">Result Sheets</p>
-              </div>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Filter className="h-4 w-4" />
-            Filter Interviews
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {["all", "completed", "in-progress", "terminated", "forfeited"].map((status) => (
-              <Button
-                key={status}
-                variant={selectedStatus === status ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedStatus(status)}
-                className="capitalize"
-              >
-                {status === "all" ? "All Interviews" : status.replace("-", " ")}
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Interviews Table */}
       <Card className="flex-1 overflow-hidden">
         <CardHeader className="pb-3">
@@ -260,10 +192,46 @@ export const ReviewerPanel = () => {
                 Showing {filteredInterviews.length} of {mockInterviews.length} interviews
               </CardDescription>
             </div>
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Download All
-            </Button>
+          </div>
+          
+          {/* Search and Filters */}
+          <div className="flex items-center gap-4 mt-4">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by candidate name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-8"
+              />
+            </div>
+            
+            <Select value={selectedProject} onValueChange={setSelectedProject}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filter by project" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Projects</SelectItem>
+                {uniqueProjects.map((project) => (
+                  <SelectItem key={project} value={project}>
+                    {project}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="in-progress">In Progress</SelectItem>
+                <SelectItem value="terminated">Terminated</SelectItem>
+                <SelectItem value="forfeited">Forfeited</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardHeader>
         <CardContent className="p-0">
