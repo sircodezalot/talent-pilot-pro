@@ -39,9 +39,9 @@ import {
   User,
   Search,
   Download,
-  Eye,
   Calendar,
-  Timer
+  Timer,
+  ChevronDown
 } from "lucide-react";
 
 interface Interview {
@@ -323,10 +323,9 @@ export const ReviewerPanel = () => {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      timeZone: timezone,
-      timeZoneName: 'short'
+      timeZone: timezone
     };
-    return date.toLocaleString('en-US', options);
+    return `${date.toLocaleString('en-US', options)} (${timezone})`;
   };
 
   const handlePlayVideo = (interviewId: string, candidateName: string) => {
@@ -352,22 +351,14 @@ export const ReviewerPanel = () => {
     <div className="h-full flex flex-col space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Interview Review Center</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Review, play, and download interview recordings and assessment reports
-        </p>
+        <h1 className="text-2xl font-semibold text-foreground">Reviewer Panel</h1>
       </div>
 
       {/* Interviews Table */}
       <Card className="flex-1 flex flex-col overflow-hidden">
         <CardHeader className="pb-3 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-base">Interview Records</CardTitle>
-              <CardDescription>
-                Showing {paginatedInterviews.length} of {filteredInterviews.length} interviews
-              </CardDescription>
-            </div>
+            <CardTitle className="text-base">Interview Records</CardTitle>
           </div>
           
           {/* Search and Filters */}
@@ -382,19 +373,15 @@ export const ReviewerPanel = () => {
               />
             </div>
             
-            <Select value={selectedProject} onValueChange={setSelectedProject}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filter by project" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Projects</SelectItem>
-                {uniqueProjects.map((project) => (
-                  <SelectItem key={project} value={project}>
-                    {project}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="relative w-48">
+              <Input
+                placeholder="Search projects..."
+                value={selectedProject === "all" ? "" : selectedProject}
+                onChange={(e) => setSelectedProject(e.target.value || "all")}
+                className="pr-8"
+              />
+              <Search className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            </div>
             
             <Select value={selectedStatus} onValueChange={setSelectedStatus}>
               <SelectTrigger className="w-40">
@@ -406,21 +393,6 @@ export const ReviewerPanel = () => {
                 <SelectItem value="in-progress">In Progress</SelectItem>
                 <SelectItem value="terminated">Terminated</SelectItem>
                 <SelectItem value="forfeited">Forfeited</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={itemsPerPage.toString()} onValueChange={(value) => {
-              setItemsPerPage(parseInt(value));
-              setCurrentPage(1);
-            }}>
-              <SelectTrigger className="w-20">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="15">15</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="45">45</SelectItem>
-                <SelectItem value="60">60</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -495,14 +467,15 @@ export const ReviewerPanel = () => {
                     <TableCell>
                       <div className="flex items-center gap-1">
                         {interview.hasVideo && (
-                          <div className="flex items-center">
+                          <div className="flex items-center gap-1">
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 w-8 p-0"
+                              className="h-8 px-2"
                               onClick={() => handlePlayVideo(interview.id, interview.candidateName)}
                             >
-                              <Play className="h-4 w-4 text-blue-600" />
+                              <Play className="h-3 w-3 mr-1" />
+                              <span className="text-xs">Play</span>
                             </Button>
                             <Button
                               variant="ghost"
@@ -515,14 +488,15 @@ export const ReviewerPanel = () => {
                           </div>
                         )}
                         {interview.hasResultSheet && (
-                          <div className="flex items-center">
+                          <div className="flex items-center gap-1">
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 w-8 p-0"
+                              className="h-8 px-2"
                               onClick={() => handleViewReport(interview.id, interview.candidateName)}
                             >
-                              <Eye className="h-4 w-4 text-green-600" />
+                              <FileText className="h-3 w-3 mr-1" />
+                              <span className="text-xs">Report</span>
                             </Button>
                             <Button
                               variant="ghost"
@@ -549,8 +523,24 @@ export const ReviewerPanel = () => {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-6 py-3 border-t flex-shrink-0">
-              <div className="text-sm text-muted-foreground">
-                Showing {startIndex + 1} to {Math.min(endIndex, filteredInterviews.length)} of {filteredInterviews.length} results
+              <div className="flex items-center gap-4">
+                <div className="text-sm text-muted-foreground">
+                  Showing {startIndex + 1} to {Math.min(endIndex, filteredInterviews.length)} of {filteredInterviews.length} results
+                </div>
+                <Select value={itemsPerPage.toString()} onValueChange={(value) => {
+                  setItemsPerPage(parseInt(value));
+                  setCurrentPage(1);
+                }}>
+                  <SelectTrigger className="w-20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="15">15</SelectItem>
+                    <SelectItem value="30">30</SelectItem>
+                    <SelectItem value="45">45</SelectItem>
+                    <SelectItem value="60">60</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <Pagination>
                 <PaginationContent>
