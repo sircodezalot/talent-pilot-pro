@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { InterviewsPage } from "@/components/interviews/InterviewsPage";
 import { TalentExtractPage } from "@/components/talent-extract/TalentExtractPage";
+import { ReviewerPanel } from "@/components/reviewer/ReviewerPanel";
 import { Progress } from "@/components/ui/progress";
 import {
   Popover,
@@ -16,7 +17,8 @@ import {
   LogOut,
   User,
   LayoutDashboard,
-  Briefcase
+  Briefcase,
+  Download
 } from "lucide-react";
 
 interface DashboardLayoutProps {
@@ -35,6 +37,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     { id: "interviews", name: "Interviews", icon: Calendar },
     { id: "talent-extract", name: "Projects", icon: Briefcase },
     { id: "projects", name: "Users", icon: Users },
+    { id: "reviewer", name: "Reviewer Panel", icon: Download },
   ];
 
   const getInitials = (name: string) =>
@@ -174,6 +177,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           {activeTab === "interviews" && <div className="h-full"><InterviewsPage /></div>}
           {activeTab === "talent-extract" && <div className="h-full"><TalentExtractPage /></div>}
           {activeTab === "projects" && <div className="h-full flex items-center justify-center"><div className="text-center text-muted-foreground">Users page coming soon...</div></div>}
+          {activeTab === "reviewer" && <div className="h-full"><ReviewerPanel /></div>}
         </div>
       </main>
     </div>
