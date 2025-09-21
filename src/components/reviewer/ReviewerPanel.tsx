@@ -703,8 +703,8 @@ export const ReviewerPanel = () => {
 
         {/* Video Modal */}
         <Dialog open={videoModalOpen} onOpenChange={handleCloseVideo}>
-          <DialogContent className="max-w-4xl w-full">
-            <DialogHeader>
+          <DialogContent className="max-w-4xl w-full max-h-[90vh] flex flex-col">
+            <DialogHeader className="flex-shrink-0">
               <DialogTitle className="flex items-center justify-between">
                 <span>{selectedInterview?.project} - {selectedInterview?.candidateName}</span>
                 <Button 
@@ -718,10 +718,10 @@ export const ReviewerPanel = () => {
               </DialogTitle>
             </DialogHeader>
             
-            <div className="space-y-4">
+            <div className="flex-1 flex flex-col gap-4 overflow-hidden">
               {/* Question Selector */}
               {selectedInterview && selectedInterview.questions.length > 0 && (
-                <div className="space-y-3">
+                <div className="flex-shrink-0 space-y-3">
                   {/* Question Display */}
                   <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
                     <div className="flex items-start gap-3">
@@ -738,7 +738,7 @@ export const ReviewerPanel = () => {
                   </div>
                   
                   {/* Navigation Controls */}
-                  <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+                  <div className="flex items-center justify-center bg-muted/50 rounded-lg p-3">
                     <div className="flex items-center gap-3">
                       <Button
                         variant="ghost"
@@ -779,16 +779,12 @@ export const ReviewerPanel = () => {
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     </div>
-                    
-                    <div className="text-sm text-muted-foreground">
-                      Duration: {formatTime(getCurrentQuestion()?.duration || 0)}
-                    </div>
                   </div>
                 </div>
               )}
 
               {/* Mock Video Player */}
-              <div className="relative bg-black rounded-lg aspect-video">
+              <div className="relative bg-black rounded-lg aspect-video flex-1 min-h-0">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-white text-lg text-center space-y-2">
                     <div>Mock Video Player - Interview {selectedInterview?.id}</div>
