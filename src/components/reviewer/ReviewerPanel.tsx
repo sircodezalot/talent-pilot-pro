@@ -706,7 +706,7 @@ export const ReviewerPanel = () => {
           <DialogContent className="max-w-4xl w-full">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
-                <span>Interview Video - {selectedInterview?.candidateName}</span>
+                <span>{selectedInterview?.project} - {selectedInterview?.candidateName}</span>
                 <Button 
                   variant="ghost" 
                   size="sm" 
