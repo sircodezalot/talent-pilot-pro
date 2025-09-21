@@ -721,50 +721,68 @@ export const ReviewerPanel = () => {
             <div className="space-y-4">
               {/* Question Selector */}
               {selectedInterview && selectedInterview.questions.length > 0 && (
-                <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
-                  <div className="flex items-center gap-3">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handlePreviousQuestion}
-                      disabled={currentQuestionIndex === 0}
-                      className="h-8 w-8 p-0"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">Question:</span>
-                      <Select value={currentQuestionIndex.toString()} onValueChange={(value) => handleQuestionChange(parseInt(value))}>
-                        <SelectTrigger className="w-16">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {selectedInterview.questions.map((_, index) => (
-                            <SelectItem key={index} value={index.toString()}>
-                              {index + 1}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <span className="text-sm text-muted-foreground">
-                        of {selectedInterview.questions.length}
-                      </span>
+                <div className="space-y-3">
+                  {/* Question Display */}
+                  <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-semibold text-primary">Q{currentQuestionIndex + 1}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-foreground mb-1">Question {currentQuestionIndex + 1}</h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {getCurrentQuestion()?.question}
+                        </p>
+                      </div>
                     </div>
-                    
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleNextQuestion}
-                      disabled={currentQuestionIndex === selectedInterview.questions.length - 1}
-                      className="h-8 w-8 p-0"
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
                   </div>
                   
-                  <div className="text-sm text-muted-foreground">
-                    {getCurrentQuestion()?.question}
+                  {/* Navigation Controls */}
+                  <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+                    <div className="flex items-center gap-3">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handlePreviousQuestion}
+                        disabled={currentQuestionIndex === 0}
+                        className="h-8 w-8 p-0"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">Question:</span>
+                        <Select value={currentQuestionIndex.toString()} onValueChange={(value) => handleQuestionChange(parseInt(value))}>
+                          <SelectTrigger className="w-16">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {selectedInterview.questions.map((_, index) => (
+                              <SelectItem key={index} value={index.toString()}>
+                                {index + 1}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <span className="text-sm text-muted-foreground">
+                          of {selectedInterview.questions.length}
+                        </span>
+                      </div>
+                      
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleNextQuestion}
+                        disabled={currentQuestionIndex === selectedInterview.questions.length - 1}
+                        className="h-8 w-8 p-0"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    <div className="text-sm text-muted-foreground">
+                      Duration: {formatTime(getCurrentQuestion()?.duration || 0)}
+                    </div>
                   </div>
                 </div>
               )}
