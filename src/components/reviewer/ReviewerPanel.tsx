@@ -51,8 +51,17 @@ import {
   ChevronDown,
   Pause,
   X,
-  Volume2
+  Volume2,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
+
+interface InterviewQuestion {
+  id: string;
+  question: string;
+  videoUrl: string;
+  duration: number; // in seconds
+}
 
 interface Interview {
   id: string;
@@ -66,6 +75,7 @@ interface Interview {
   hasVideo: boolean;
   hasResultSheet: boolean;
   score?: number;
+  questions: InterviewQuestion[];
 }
 
 const mockInterviews: Interview[] = [
@@ -80,7 +90,12 @@ const mockInterviews: Interview[] = [
     status: "completed",
     hasVideo: true,
     hasResultSheet: true,
-    score: 85
+    score: 85,
+    questions: [
+      { id: "Q1", question: "Tell us about your experience with React", videoUrl: "/mock-video-1.mp4", duration: 180 },
+      { id: "Q2", question: "How do you handle state management?", videoUrl: "/mock-video-2.mp4", duration: 240 },
+      { id: "Q3", question: "Explain your approach to testing React components", videoUrl: "/mock-video-3.mp4", duration: 200 }
+    ]
   },
   {
     id: "INT-002",
@@ -93,7 +108,8 @@ const mockInterviews: Interview[] = [
     status: "completed",
     hasVideo: false,
     hasResultSheet: true,
-    score: 92
+    score: 92,
+    questions: []
   },
   {
     id: "INT-003",
@@ -105,7 +121,11 @@ const mockInterviews: Interview[] = [
     attemptedAt: "2024-01-13 16:15",
     status: "terminated",
     hasVideo: true,
-    hasResultSheet: false
+    hasResultSheet: false,
+    questions: [
+      { id: "Q1", question: "Database design principles", videoUrl: "/mock-video-1.mp4", duration: 150 },
+      { id: "Q2", question: "API security best practices", videoUrl: "/mock-video-2.mp4", duration: 190 }
+    ]
   },
   {
     id: "INT-004",
@@ -117,7 +137,8 @@ const mockInterviews: Interview[] = [
     attemptedAt: "2024-01-12 11:20",
     status: "forfeited",
     hasVideo: false,
-    hasResultSheet: false
+    hasResultSheet: false,
+    questions: []
   },
   {
     id: "INT-005",
@@ -128,7 +149,13 @@ const mockInterviews: Interview[] = [
     interviewEndTime: "2024-01-11 10:15",
     status: "in-progress",
     hasVideo: true,
-    hasResultSheet: false
+    hasResultSheet: false,
+    questions: [
+      { id: "Q1", question: "Docker containerization strategy", videoUrl: "/mock-video-1.mp4", duration: 220 },
+      { id: "Q2", question: "CI/CD pipeline implementation", videoUrl: "/mock-video-2.mp4", duration: 280 },
+      { id: "Q3", question: "Kubernetes orchestration", videoUrl: "/mock-video-3.mp4", duration: 260 },
+      { id: "Q4", question: "Cloud security considerations", videoUrl: "/mock-video-4.mp4", duration: 300 }
+    ]
   },
   {
     id: "INT-006",
@@ -141,7 +168,11 @@ const mockInterviews: Interview[] = [
     status: "completed",
     hasVideo: true,
     hasResultSheet: true,
-    score: 78
+    score: 78,
+    questions: [
+      { id: "Q1", question: "JavaScript ES6+ features", videoUrl: "/mock-video-1.mp4", duration: 160 },
+      { id: "Q2", question: "Performance optimization techniques", videoUrl: "/mock-video-2.mp4", duration: 210 }
+    ]
   },
   {
     id: "INT-007",
@@ -154,7 +185,12 @@ const mockInterviews: Interview[] = [
     status: "completed",
     hasVideo: true,
     hasResultSheet: true,
-    score: 95
+    score: 95,
+    questions: [
+      { id: "Q1", question: "Machine learning algorithms", videoUrl: "/mock-video-1.mp4", duration: 270 },
+      { id: "Q2", question: "Data preprocessing techniques", videoUrl: "/mock-video-2.mp4", duration: 250 },
+      { id: "Q3", question: "Statistical analysis methods", videoUrl: "/mock-video-3.mp4", duration: 230 }
+    ]
   },
   {
     id: "INT-008",
@@ -166,7 +202,8 @@ const mockInterviews: Interview[] = [
     attemptedAt: "2024-01-08 10:45",
     status: "terminated",
     hasVideo: false,
-    hasResultSheet: false
+    hasResultSheet: false,
+    questions: []
   },
   {
     id: "INT-009",
@@ -179,7 +216,12 @@ const mockInterviews: Interview[] = [
     status: "completed",
     hasVideo: true,
     hasResultSheet: true,
-    score: 87
+    score: 87,
+    questions: [
+      { id: "Q1", question: "React Native vs Flutter", videoUrl: "/mock-video-1.mp4", duration: 180 },
+      { id: "Q2", question: "Mobile app performance optimization", videoUrl: "/mock-video-2.mp4", duration: 220 },
+      { id: "Q3", question: "Cross-platform development strategies", videoUrl: "/mock-video-3.mp4", duration: 190 }
+    ]
   },
   {
     id: "INT-010",
@@ -190,7 +232,10 @@ const mockInterviews: Interview[] = [
     interviewEndTime: "2024-01-06 12:30",
     status: "forfeited",
     hasVideo: true,
-    hasResultSheet: false
+    hasResultSheet: false,
+    questions: [
+      { id: "Q1", question: "Healthcare data security", videoUrl: "/mock-video-1.mp4", duration: 150 }
+    ]
   },
   {
     id: "INT-011",
@@ -203,7 +248,11 @@ const mockInterviews: Interview[] = [
     status: "completed",
     hasVideo: true,
     hasResultSheet: true,
-    score: 82
+    score: 82,
+    questions: [
+      { id: "Q1", question: "Test automation strategies", videoUrl: "/mock-video-1.mp4", duration: 200 },
+      { id: "Q2", question: "Bug tracking and reporting", videoUrl: "/mock-video-2.mp4", duration: 180 }
+    ]
   },
   {
     id: "INT-012",
@@ -216,7 +265,12 @@ const mockInterviews: Interview[] = [
     status: "completed",
     hasVideo: true,
     hasResultSheet: true,
-    score: 91
+    score: 91,
+    questions: [
+      { id: "Q1", question: "Infrastructure as Code", videoUrl: "/mock-video-1.mp4", duration: 240 },
+      { id: "Q2", question: "Monitoring and alerting", videoUrl: "/mock-video-2.mp4", duration: 200 },
+      { id: "Q3", question: "Disaster recovery planning", videoUrl: "/mock-video-3.mp4", duration: 280 }
+    ]
   },
   {
     id: "INT-013",
@@ -228,7 +282,8 @@ const mockInterviews: Interview[] = [
     attemptedAt: "2024-01-03 14:40",
     status: "terminated",
     hasVideo: false,
-    hasResultSheet: false
+    hasResultSheet: false,
+    questions: []
   },
   {
     id: "INT-014",
@@ -241,7 +296,11 @@ const mockInterviews: Interview[] = [
     status: "completed",
     hasVideo: true,
     hasResultSheet: true,
-    score: 88
+    score: 88,
+    questions: [
+      { id: "Q1", question: "Python data libraries", videoUrl: "/mock-video-1.mp4", duration: 190 },
+      { id: "Q2", question: "Data visualization techniques", videoUrl: "/mock-video-2.mp4", duration: 170 }
+    ]
   },
   {
     id: "INT-015",
@@ -254,7 +313,11 @@ const mockInterviews: Interview[] = [
     status: "completed",
     hasVideo: true,
     hasResultSheet: true,
-    score: 79
+    score: 79,
+    questions: [
+      { id: "Q1", question: "CSS Grid and Flexbox", videoUrl: "/mock-video-1.mp4", duration: 160 },
+      { id: "Q2", question: "Responsive design principles", videoUrl: "/mock-video-2.mp4", duration: 180 }
+    ]
   },
   {
     id: "INT-016",
@@ -265,7 +328,11 @@ const mockInterviews: Interview[] = [
     interviewEndTime: "2023-12-30 16:30",
     status: "in-progress",
     hasVideo: true,
-    hasResultSheet: false
+    hasResultSheet: false,
+    questions: [
+      { id: "Q1", question: "iOS vs Android development", videoUrl: "/mock-video-1.mp4", duration: 210 },
+      { id: "Q2", question: "Mobile UI/UX best practices", videoUrl: "/mock-video-2.mp4", duration: 195 }
+    ]
   }
 ];
 
@@ -307,10 +374,10 @@ export const ReviewerPanel = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(15);
   const [videoModalOpen, setVideoModalOpen] = useState<boolean>(false);
-  const [selectedVideo, setSelectedVideo] = useState<{ id: string; name: string } | null>(null);
+  const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
-  const [duration, setDuration] = useState<number>(100); // Mock duration in seconds
 
   // Get unique projects for the dropdown
   const uniqueProjects = Array.from(new Set(mockInterviews.map(i => i.project)));
@@ -344,15 +411,20 @@ export const ReviewerPanel = () => {
   };
 
   const handlePlayVideo = (interviewId: string, candidateName: string) => {
-    setSelectedVideo({ id: interviewId, name: candidateName });
-    setVideoModalOpen(true);
-    setCurrentTime(0);
-    setIsPlaying(false);
+    const interview = mockInterviews.find(i => i.id === interviewId);
+    if (interview && interview.questions.length > 0) {
+      setSelectedInterview(interview);
+      setCurrentQuestionIndex(0);
+      setVideoModalOpen(true);
+      setCurrentTime(0);
+      setIsPlaying(false);
+    }
   };
 
   const handleCloseVideo = () => {
     setVideoModalOpen(false);
-    setSelectedVideo(null);
+    setSelectedInterview(null);
+    setCurrentQuestionIndex(0);
     setIsPlaying(false);
     setCurrentTime(0);
   };
@@ -363,6 +435,31 @@ export const ReviewerPanel = () => {
 
   const handleTimeChange = (value: number[]) => {
     setCurrentTime(value[0]);
+  };
+
+  const handleQuestionChange = (questionIndex: number) => {
+    setCurrentQuestionIndex(questionIndex);
+    setCurrentTime(0);
+    setIsPlaying(false);
+  };
+
+  const handlePreviousQuestion = () => {
+    if (selectedInterview && currentQuestionIndex > 0) {
+      handleQuestionChange(currentQuestionIndex - 1);
+    }
+  };
+
+  const handleNextQuestion = () => {
+    if (selectedInterview && currentQuestionIndex < selectedInterview.questions.length - 1) {
+      handleQuestionChange(currentQuestionIndex + 1);
+    }
+  };
+
+  const getCurrentQuestion = () => {
+    if (selectedInterview && selectedInterview.questions[currentQuestionIndex]) {
+      return selectedInterview.questions[currentQuestionIndex];
+    }
+    return null;
   };
 
   const formatTime = (seconds: number) => {
@@ -609,7 +706,7 @@ export const ReviewerPanel = () => {
           <DialogContent className="max-w-4xl w-full">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
-                <span>Interview Video - {selectedVideo?.name}</span>
+                <span>Interview Video - {selectedInterview?.candidateName}</span>
                 <Button 
                   variant="ghost" 
                   size="sm" 
@@ -622,11 +719,66 @@ export const ReviewerPanel = () => {
             </DialogHeader>
             
             <div className="space-y-4">
+              {/* Question Selector */}
+              {selectedInterview && selectedInterview.questions.length > 0 && (
+                <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handlePreviousQuestion}
+                      disabled={currentQuestionIndex === 0}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">Question:</span>
+                      <Select value={currentQuestionIndex.toString()} onValueChange={(value) => handleQuestionChange(parseInt(value))}>
+                        <SelectTrigger className="w-16">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {selectedInterview.questions.map((_, index) => (
+                            <SelectItem key={index} value={index.toString()}>
+                              {index + 1}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <span className="text-sm text-muted-foreground">
+                        of {selectedInterview.questions.length}
+                      </span>
+                    </div>
+                    
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleNextQuestion}
+                      disabled={currentQuestionIndex === selectedInterview.questions.length - 1}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  <div className="text-sm text-muted-foreground">
+                    {getCurrentQuestion()?.question}
+                  </div>
+                </div>
+              )}
+
               {/* Mock Video Player */}
               <div className="relative bg-black rounded-lg aspect-video">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-white text-lg">
-                    Mock Video Player - Interview {selectedVideo?.id}
+                  <div className="text-white text-lg text-center space-y-2">
+                    <div>Mock Video Player - Interview {selectedInterview?.id}</div>
+                    {getCurrentQuestion() && (
+                      <div className="text-sm opacity-75">
+                        Question {currentQuestionIndex + 1}: {getCurrentQuestion()?.question}
+                      </div>
+                    )}
                   </div>
                 </div>
                 
@@ -640,13 +792,13 @@ export const ReviewerPanel = () => {
                         <Slider
                           value={[currentTime]}
                           onValueChange={handleTimeChange}
-                          max={duration}
+                          max={getCurrentQuestion()?.duration || 100}
                           min={0}
                           step={1}
                           className="w-full"
                         />
                       </div>
-                      <span>{formatTime(duration)}</span>
+                      <span>{formatTime(getCurrentQuestion()?.duration || 100)}</span>
                     </div>
                     
                     {/* Control Buttons */}
@@ -674,15 +826,6 @@ export const ReviewerPanel = () => {
                           className="w-20"
                         />
                       </div>
-                      
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDownload("video", selectedVideo?.id || "", selectedVideo?.name || "")}
-                        className="h-8 w-8 p-0 text-white hover:bg-white/20 ml-auto"
-                      >
-                        <Download className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
                 </div>
