@@ -71,7 +71,7 @@ interface Interview {
   interviewStartTime: string;
   interviewEndTime: string;
   attemptedAt?: string;
-  status: "completed" | "in-progress" | "terminated" | "forfeited";
+  status: "pass" | "fail" | "pending" | "terminated" | "forfeited" | "in progress";
   hasVideo: boolean;
   hasResultSheet: boolean;
   score?: number;
@@ -81,20 +81,20 @@ interface Interview {
 const mockInterviews: Interview[] = [
   {
     id: "INT-001",
-    candidateName: "Sarah Johnson",
-    candidateEmail: "sarah.johnson@email.com",
-    project: "Frontend Developer - E-commerce Platform",
-    interviewStartTime: "2024-01-15 14:00",
-    interviewEndTime: "2024-01-15 15:00",
-    attemptedAt: "2024-01-15 14:05",
-    status: "completed",
+    candidateName: "Maria Garcia",
+    candidateEmail: "maria.garcia@email.com",
+    project: "Data Scientist - Analytics Platform",
+    interviewStartTime: "2024-01-09 13:30",
+    interviewEndTime: "2024-01-09 14:30",
+    attemptedAt: "2024-01-09 13:35",
+    status: "pass",
     hasVideo: true,
     hasResultSheet: true,
-    score: 85,
+    score: 95,
     questions: [
-      { id: "Q1", question: "Tell us about your experience with React", videoUrl: "/mock-video-1.mp4", duration: 180 },
-      { id: "Q2", question: "How do you handle state management?", videoUrl: "/mock-video-2.mp4", duration: 240 },
-      { id: "Q3", question: "Explain your approach to testing React components", videoUrl: "/mock-video-3.mp4", duration: 200 }
+      { id: "Q1", question: "Machine learning algorithms", videoUrl: "/mock-video-1.mp4", duration: 270 },
+      { id: "Q2", question: "Data preprocessing techniques", videoUrl: "/mock-video-2.mp4", duration: 250 },
+      { id: "Q3", question: "Statistical analysis methods", videoUrl: "/mock-video-3.mp4", duration: 230 }
     ]
   },
   {
@@ -105,7 +105,7 @@ const mockInterviews: Interview[] = [
     interviewStartTime: "2024-01-14 10:30",
     interviewEndTime: "2024-01-14 11:30",
     attemptedAt: "2024-01-14 10:32",
-    status: "completed",
+    status: "pass",
     hasVideo: false,
     hasResultSheet: true,
     score: 92,
@@ -113,22 +113,205 @@ const mockInterviews: Interview[] = [
   },
   {
     id: "INT-003",
+    candidateName: "Carlos Martinez",
+    candidateEmail: "carlos.martinez@email.com",
+    project: "DevOps Engineer - Cloud Migration",
+    interviewStartTime: "2024-01-04 09:00",
+    interviewEndTime: "2024-01-04 10:00",
+    attemptedAt: "2024-01-04 09:12",
+    status: "pass",
+    hasVideo: true,
+    hasResultSheet: true,
+    score: 91,
+    questions: [
+      { id: "Q1", question: "Infrastructure as Code", videoUrl: "/mock-video-1.mp4", duration: 240 },
+      { id: "Q2", question: "Monitoring and alerting", videoUrl: "/mock-video-2.mp4", duration: 200 },
+      { id: "Q3", question: "Disaster recovery planning", videoUrl: "/mock-video-3.mp4", duration: 280 }
+    ]
+  },
+  {
+    id: "INT-004",
+    candidateName: "Michael Johnson",
+    candidateEmail: "michael.johnson@email.com",
+    project: "Data Scientist - Analytics Platform",
+    interviewStartTime: "2024-01-02 10:15",
+    interviewEndTime: "2024-01-02 11:15",
+    attemptedAt: "2024-01-02 10:20",
+    status: "pass",
+    hasVideo: true,
+    hasResultSheet: true,
+    score: 88,
+    questions: [
+      { id: "Q1", question: "Python data libraries", videoUrl: "/mock-video-1.mp4", duration: 190 },
+      { id: "Q2", question: "Data visualization techniques", videoUrl: "/mock-video-2.mp4", duration: 170 }
+    ]
+  },
+  {
+    id: "INT-005",
+    candidateName: "Sophie Lee",
+    candidateEmail: "sophie.lee@email.com",
+    project: "Mobile Developer - Social Media App",
+    interviewStartTime: "2024-01-07 14:00",
+    interviewEndTime: "2024-01-07 15:00",
+    attemptedAt: "2024-01-07 14:10",
+    status: "pass",
+    hasVideo: true,
+    hasResultSheet: true,
+    score: 87,
+    questions: [
+      { id: "Q1", question: "React Native vs Flutter", videoUrl: "/mock-video-1.mp4", duration: 180 },
+      { id: "Q2", question: "Mobile app performance optimization", videoUrl: "/mock-video-2.mp4", duration: 220 },
+      { id: "Q3", question: "Cross-platform development strategies", videoUrl: "/mock-video-3.mp4", duration: 190 }
+    ]
+  },
+  {
+    id: "INT-006",
+    candidateName: "Sarah Johnson",
+    candidateEmail: "sarah.johnson@email.com",
+    project: "Frontend Developer - E-commerce Platform",
+    interviewStartTime: "2024-01-15 14:00",
+    interviewEndTime: "2024-01-15 15:00",
+    attemptedAt: "2024-01-15 14:05",
+    status: "pass",
+    hasVideo: true,
+    hasResultSheet: true,
+    score: 85,
+    questions: [
+      { id: "Q1", question: "Tell us about your experience with React", videoUrl: "/mock-video-1.mp4", duration: 180 },
+      { id: "Q2", question: "How do you handle state management?", videoUrl: "/mock-video-2.mp4", duration: 240 },
+      { id: "Q3", question: "Explain your approach to testing React components", videoUrl: "/mock-video-3.mp4", duration: 200 }
+    ]
+  },
+  {
+    id: "INT-007",
+    candidateName: "Jennifer Brown",
+    candidateEmail: "jennifer.brown@email.com",
+    project: "QA Engineer - Testing Framework",
+    interviewStartTime: "2024-01-05 16:00",
+    interviewEndTime: "2024-01-05 17:00",
+    attemptedAt: "2024-01-05 16:05",
+    status: "pass",
+    hasVideo: true,
+    hasResultSheet: true,
+    score: 82,
+    questions: [
+      { id: "Q1", question: "Test automation strategies", videoUrl: "/mock-video-1.mp4", duration: 200 },
+      { id: "Q2", question: "Bug tracking and reporting", videoUrl: "/mock-video-2.mp4", duration: 180 }
+    ]
+  },
+  {
+    id: "INT-008",
+    candidateName: "Rachel Green",
+    candidateEmail: "rachel.green@email.com",
+    project: "Frontend Developer - E-commerce Platform",
+    interviewStartTime: "2024-01-01 13:00",
+    interviewEndTime: "2024-01-01 14:00",
+    attemptedAt: "2024-01-01 13:08",
+    status: "pass",
+    hasVideo: true,
+    hasResultSheet: true,
+    score: 79,
+    questions: [
+      { id: "Q1", question: "CSS Grid and Flexbox", videoUrl: "/mock-video-1.mp4", duration: 160 },
+      { id: "Q2", question: "Responsive design principles", videoUrl: "/mock-video-2.mp4", duration: 180 }
+    ]
+  },
+  {
+    id: "INT-009",
+    candidateName: "Alex Thompson",
+    candidateEmail: "alex.thompson@email.com",
+    project: "Frontend Developer - E-commerce Platform",
+    interviewStartTime: "2024-01-10 15:00",
+    interviewEndTime: "2024-01-10 16:00",
+    attemptedAt: "2024-01-10 15:03",
+    status: "pass",
+    hasVideo: true,
+    hasResultSheet: true,
+    score: 78,
+    questions: [
+      { id: "Q1", question: "JavaScript ES6+ features", videoUrl: "/mock-video-1.mp4", duration: 160 },
+      { id: "Q2", question: "Performance optimization techniques", videoUrl: "/mock-video-2.mp4", duration: 210 }
+    ]
+  },
+  {
+    id: "INT-010",
+    candidateName: "James Wilson",
+    candidateEmail: "james.wilson@email.com",
+    project: "Backend Developer - Banking System",
+    interviewStartTime: "2024-01-08 10:00",
+    interviewEndTime: "2024-01-08 11:00",
+    attemptedAt: "2024-01-08 10:45",
+    status: "fail",
+    hasVideo: false,
+    hasResultSheet: true,
+    score: 65,
+    questions: []
+  },
+  {
+    id: "INT-011",
     candidateName: "Emma Wilson",
     candidateEmail: "emma.wilson@email.com",
     project: "Full Stack Developer - Healthcare App",
     interviewStartTime: "2024-01-13 16:00",
     interviewEndTime: "2024-01-13 17:00",
     attemptedAt: "2024-01-13 16:15",
-    status: "terminated",
+    status: "fail",
     hasVideo: true,
-    hasResultSheet: false,
+    hasResultSheet: true,
+    score: 45,
     questions: [
       { id: "Q1", question: "Database design principles", videoUrl: "/mock-video-1.mp4", duration: 150 },
       { id: "Q2", question: "API security best practices", videoUrl: "/mock-video-2.mp4", duration: 190 }
     ]
   },
   {
-    id: "INT-004",
+    id: "INT-012",
+    candidateName: "David Kim",
+    candidateEmail: "david.kim@email.com",
+    project: "Backend Developer - Banking System",
+    interviewStartTime: "2024-01-08 10:00",
+    interviewEndTime: "2024-01-08 11:00",
+    attemptedAt: "2024-01-08 10:45",
+    status: "fail",
+    hasVideo: false,
+    hasResultSheet: true,
+    score: 35,
+    questions: []
+  },
+  {
+    id: "INT-013",
+    candidateName: "Lisa Rodriguez",
+    candidateEmail: "lisa.rodriguez@email.com",
+    project: "DevOps Engineer - Cloud Migration",
+    interviewStartTime: "2024-01-11 09:15",
+    interviewEndTime: "2024-01-11 10:15",
+    status: "in progress",
+    hasVideo: true,
+    hasResultSheet: false,
+    questions: [
+      { id: "Q1", question: "Docker containerization strategy", videoUrl: "/mock-video-1.mp4", duration: 220 },
+      { id: "Q2", question: "CI/CD pipeline implementation", videoUrl: "/mock-video-2.mp4", duration: 280 },
+      { id: "Q3", question: "Kubernetes orchestration", videoUrl: "/mock-video-3.mp4", duration: 260 },
+      { id: "Q4", question: "Cloud security considerations", videoUrl: "/mock-video-4.mp4", duration: 300 }
+    ]
+  },
+  {
+    id: "INT-014",
+    candidateName: "Thomas Anderson",
+    candidateEmail: "thomas.anderson@email.com",
+    project: "Mobile Developer - Social Media App",
+    interviewStartTime: "2023-12-30 15:30",
+    interviewEndTime: "2023-12-30 16:30",
+    status: "in progress",
+    hasVideo: true,
+    hasResultSheet: false,
+    questions: [
+      { id: "Q1", question: "iOS vs Android development", videoUrl: "/mock-video-1.mp4", duration: 210 },
+      { id: "Q2", question: "Mobile UI/UX best practices", videoUrl: "/mock-video-2.mp4", duration: 195 }
+    ]
+  },
+  {
+    id: "INT-015",
     candidateName: "John Davis",
     candidateEmail: "john.davis@email.com",
     project: "UI/UX Designer - Mobile App Redesign",
@@ -141,90 +324,7 @@ const mockInterviews: Interview[] = [
     questions: []
   },
   {
-    id: "INT-005",
-    candidateName: "Lisa Rodriguez",
-    candidateEmail: "lisa.rodriguez@email.com",
-    project: "DevOps Engineer - Cloud Migration",
-    interviewStartTime: "2024-01-11 09:15",
-    interviewEndTime: "2024-01-11 10:15",
-    status: "in-progress",
-    hasVideo: true,
-    hasResultSheet: false,
-    questions: [
-      { id: "Q1", question: "Docker containerization strategy", videoUrl: "/mock-video-1.mp4", duration: 220 },
-      { id: "Q2", question: "CI/CD pipeline implementation", videoUrl: "/mock-video-2.mp4", duration: 280 },
-      { id: "Q3", question: "Kubernetes orchestration", videoUrl: "/mock-video-3.mp4", duration: 260 },
-      { id: "Q4", question: "Cloud security considerations", videoUrl: "/mock-video-4.mp4", duration: 300 }
-    ]
-  },
-  {
-    id: "INT-006",
-    candidateName: "Alex Thompson",
-    candidateEmail: "alex.thompson@email.com",
-    project: "Frontend Developer - E-commerce Platform",
-    interviewStartTime: "2024-01-10 15:00",
-    interviewEndTime: "2024-01-10 16:00",
-    attemptedAt: "2024-01-10 15:03",
-    status: "completed",
-    hasVideo: true,
-    hasResultSheet: true,
-    score: 78,
-    questions: [
-      { id: "Q1", question: "JavaScript ES6+ features", videoUrl: "/mock-video-1.mp4", duration: 160 },
-      { id: "Q2", question: "Performance optimization techniques", videoUrl: "/mock-video-2.mp4", duration: 210 }
-    ]
-  },
-  {
-    id: "INT-007",
-    candidateName: "Maria Garcia",
-    candidateEmail: "maria.garcia@email.com",
-    project: "Data Scientist - Analytics Platform",
-    interviewStartTime: "2024-01-09 13:30",
-    interviewEndTime: "2024-01-09 14:30",
-    attemptedAt: "2024-01-09 13:35",
-    status: "completed",
-    hasVideo: true,
-    hasResultSheet: true,
-    score: 95,
-    questions: [
-      { id: "Q1", question: "Machine learning algorithms", videoUrl: "/mock-video-1.mp4", duration: 270 },
-      { id: "Q2", question: "Data preprocessing techniques", videoUrl: "/mock-video-2.mp4", duration: 250 },
-      { id: "Q3", question: "Statistical analysis methods", videoUrl: "/mock-video-3.mp4", duration: 230 }
-    ]
-  },
-  {
-    id: "INT-008",
-    candidateName: "David Kim",
-    candidateEmail: "david.kim@email.com",
-    project: "Backend Developer - Banking System",
-    interviewStartTime: "2024-01-08 10:00",
-    interviewEndTime: "2024-01-08 11:00",
-    attemptedAt: "2024-01-08 10:45",
-    status: "terminated",
-    hasVideo: false,
-    hasResultSheet: false,
-    questions: []
-  },
-  {
-    id: "INT-009",
-    candidateName: "Sophie Lee",
-    candidateEmail: "sophie.lee@email.com",
-    project: "Mobile Developer - Social Media App",
-    interviewStartTime: "2024-01-07 14:00",
-    interviewEndTime: "2024-01-07 15:00",
-    attemptedAt: "2024-01-07 14:10",
-    status: "completed",
-    hasVideo: true,
-    hasResultSheet: true,
-    score: 87,
-    questions: [
-      { id: "Q1", question: "React Native vs Flutter", videoUrl: "/mock-video-1.mp4", duration: 180 },
-      { id: "Q2", question: "Mobile app performance optimization", videoUrl: "/mock-video-2.mp4", duration: 220 },
-      { id: "Q3", question: "Cross-platform development strategies", videoUrl: "/mock-video-3.mp4", duration: 190 }
-    ]
-  },
-  {
-    id: "INT-010",
+    id: "INT-016",
     candidateName: "Ryan Wilson",
     candidateEmail: "ryan.wilson@email.com",
     project: "Full Stack Developer - Healthcare App",
@@ -238,42 +338,7 @@ const mockInterviews: Interview[] = [
     ]
   },
   {
-    id: "INT-011",
-    candidateName: "Jennifer Brown",
-    candidateEmail: "jennifer.brown@email.com",
-    project: "QA Engineer - Testing Framework",
-    interviewStartTime: "2024-01-05 16:00",
-    interviewEndTime: "2024-01-05 17:00",
-    attemptedAt: "2024-01-05 16:05",
-    status: "completed",
-    hasVideo: true,
-    hasResultSheet: true,
-    score: 82,
-    questions: [
-      { id: "Q1", question: "Test automation strategies", videoUrl: "/mock-video-1.mp4", duration: 200 },
-      { id: "Q2", question: "Bug tracking and reporting", videoUrl: "/mock-video-2.mp4", duration: 180 }
-    ]
-  },
-  {
-    id: "INT-012",
-    candidateName: "Carlos Martinez",
-    candidateEmail: "carlos.martinez@email.com",
-    project: "DevOps Engineer - Cloud Migration",
-    interviewStartTime: "2024-01-04 09:00",
-    interviewEndTime: "2024-01-04 10:00",
-    attemptedAt: "2024-01-04 09:12",
-    status: "completed",
-    hasVideo: true,
-    hasResultSheet: true,
-    score: 91,
-    questions: [
-      { id: "Q1", question: "Infrastructure as Code", videoUrl: "/mock-video-1.mp4", duration: 240 },
-      { id: "Q2", question: "Monitoring and alerting", videoUrl: "/mock-video-2.mp4", duration: 200 },
-      { id: "Q3", question: "Disaster recovery planning", videoUrl: "/mock-video-3.mp4", duration: 280 }
-    ]
-  },
-  {
-    id: "INT-013",
+    id: "INT-017",
     candidateName: "Anna Taylor",
     candidateEmail: "anna.taylor@email.com",
     project: "UI/UX Designer - Mobile App Redesign",
@@ -286,66 +351,45 @@ const mockInterviews: Interview[] = [
     questions: []
   },
   {
-    id: "INT-014",
-    candidateName: "Michael Johnson",
-    candidateEmail: "michael.johnson@email.com",
-    project: "Data Scientist - Analytics Platform",
-    interviewStartTime: "2024-01-02 10:15",
-    interviewEndTime: "2024-01-02 11:15",
-    attemptedAt: "2024-01-02 10:20",
-    status: "completed",
-    hasVideo: true,
-    hasResultSheet: true,
-    score: 88,
-    questions: [
-      { id: "Q1", question: "Python data libraries", videoUrl: "/mock-video-1.mp4", duration: 190 },
-      { id: "Q2", question: "Data visualization techniques", videoUrl: "/mock-video-2.mp4", duration: 170 }
-    ]
-  },
-  {
-    id: "INT-015",
-    candidateName: "Rachel Green",
-    candidateEmail: "rachel.green@email.com",
-    project: "Frontend Developer - E-commerce Platform",
-    interviewStartTime: "2024-01-01 13:00",
-    interviewEndTime: "2024-01-01 14:00",
-    attemptedAt: "2024-01-01 13:08",
-    status: "completed",
-    hasVideo: true,
-    hasResultSheet: true,
-    score: 79,
-    questions: [
-      { id: "Q1", question: "CSS Grid and Flexbox", videoUrl: "/mock-video-1.mp4", duration: 160 },
-      { id: "Q2", question: "Responsive design principles", videoUrl: "/mock-video-2.mp4", duration: 180 }
-    ]
-  },
-  {
-    id: "INT-016",
-    candidateName: "Thomas Anderson",
-    candidateEmail: "thomas.anderson@email.com",
-    project: "Mobile Developer - Social Media App",
-    interviewStartTime: "2023-12-30 15:30",
-    interviewEndTime: "2023-12-30 16:30",
-    status: "in-progress",
-    hasVideo: true,
+    id: "INT-018",
+    candidateName: "Mark Stevens",
+    candidateEmail: "mark.stevens@email.com",
+    project: "Backend Developer - Banking System",
+    interviewStartTime: "2024-01-20 14:00",
+    interviewEndTime: "2024-01-20 15:00",
+    status: "pending",
+    hasVideo: false,
     hasResultSheet: false,
-    questions: [
-      { id: "Q1", question: "iOS vs Android development", videoUrl: "/mock-video-1.mp4", duration: 210 },
-      { id: "Q2", question: "Mobile UI/UX best practices", videoUrl: "/mock-video-2.mp4", duration: 195 }
-    ]
+    questions: []
+  },
+  {
+    id: "INT-019",
+    candidateName: "Jessica Davis",
+    candidateEmail: "jessica.davis@email.com",
+    project: "Frontend Developer - E-commerce Platform",
+    interviewStartTime: "2024-01-22 10:00",
+    interviewEndTime: "2024-01-22 11:00",
+    status: "pending",
+    hasVideo: false,
+    hasResultSheet: false,
+    questions: []
   }
 ];
 
 const getStatusIcon = (status: Interview["status"]) => {
   switch (status) {
-    case "completed":
+    case "pass":
       return <CheckCircle className="h-4 w-4 text-green-500" />;
-    case "in-progress":
+    case "fail":
+      return <XCircle className="h-4 w-4 text-red-500" />;
+    case "in progress":
       return <Play className="h-4 w-4 text-blue-500" />;
     case "terminated":
-      return <XCircle className="h-4 w-4 text-red-500" />;
+      return <XCircle className="h-4 w-4 text-red-600" />;
     case "forfeited":
       return <AlertCircle className="h-4 w-4 text-orange-500" />;
+    case "pending":
+      return <Clock className="h-4 w-4 text-yellow-500" />;
     default:
       return null;
   }
@@ -353,16 +397,18 @@ const getStatusIcon = (status: Interview["status"]) => {
 
 const getStatusBadge = (status: Interview["status"]) => {
   const variants = {
-    completed: "bg-green-500/10 text-green-600 hover:bg-green-500/20",
-    "in-progress": "bg-blue-500/10 text-blue-600 hover:bg-blue-500/20", 
-    terminated: "bg-red-500/10 text-red-600 hover:bg-red-500/20",
-    forfeited: "bg-orange-500/10 text-orange-600 hover:bg-orange-500/20"
+    pass: "bg-green-500/10 text-green-600 hover:bg-green-500/20",
+    fail: "bg-red-500/10 text-red-600 hover:bg-red-500/20",
+    "in progress": "bg-blue-500/10 text-blue-600 hover:bg-blue-500/20", 
+    terminated: "bg-red-600/10 text-red-700 hover:bg-red-600/20",
+    forfeited: "bg-orange-500/10 text-orange-600 hover:bg-orange-500/20",
+    pending: "bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20"
   };
 
   return (
     <Badge variant="secondary" className={variants[status]}>
       {getStatusIcon(status)}
-      <span className="ml-1 capitalize">{status.replace("-", " ")}</span>
+      <span className="ml-1 capitalize">{status}</span>
     </Badge>
   );
 };
@@ -382,14 +428,34 @@ export const ReviewerPanel = () => {
   // Get unique projects for the dropdown
   const uniqueProjects = Array.from(new Set(mockInterviews.map(i => i.project)));
 
-  const filteredInterviews = mockInterviews.filter(interview => {
-    const matchesStatus = selectedStatus === "all" || interview.status === selectedStatus;
-    const matchesProject = selectedProject === "all" || interview.project === selectedProject;
-    const matchesSearch = searchTerm === "" || 
-      interview.candidateName.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    return matchesStatus && matchesProject && matchesSearch;
-  });
+  const filteredInterviews = mockInterviews
+    .filter(interview => {
+      const matchesStatus = selectedStatus === "all" || interview.status === selectedStatus;
+      const matchesProject = selectedProject === "all" || interview.project === selectedProject;
+      const matchesSearch = searchTerm === "" || 
+        interview.candidateName.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      return matchesStatus && matchesProject && matchesSearch;
+    })
+    .sort((a, b) => {
+      // First, sort by status priority: pass, fail, then others
+      const statusOrder = { "pass": 1, "fail": 2, "pending": 3, "terminated": 4, "forfeited": 5, "in progress": 6 };
+      const aOrder = statusOrder[a.status] || 999;
+      const bOrder = statusOrder[b.status] || 999;
+      
+      if (aOrder !== bOrder) {
+        return aOrder - bOrder;
+      }
+      
+      // Within same status, sort by score (highest to lowest)
+      if (a.status === "pass" || a.status === "fail") {
+        const aScore = a.score || 0;
+        const bScore = b.score || 0;
+        return bScore - aScore; // Descending order
+      }
+      
+      return 0; // Keep original order for other statuses
+    });
 
   // Pagination logic
   const totalPages = Math.ceil(filteredInterviews.length / itemsPerPage);
@@ -524,8 +590,10 @@ export const ReviewerPanel = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="in-progress">In Progress</SelectItem>
+                <SelectItem value="pass">Pass</SelectItem>
+                <SelectItem value="fail">Fail</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="in progress">In Progress</SelectItem>
                 <SelectItem value="terminated">Terminated</SelectItem>
                 <SelectItem value="forfeited">Forfeited</SelectItem>
               </SelectContent>
@@ -601,16 +669,6 @@ export const ReviewerPanel = () => {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        {interview.hasVideo && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={() => handlePlayVideo(interview.id, interview.candidateName)}
-                          >
-                            <Play className="h-4 w-4" />
-                          </Button>
-                        )}
                         {interview.hasResultSheet && (
                           <Button
                             variant="ghost"
@@ -621,8 +679,8 @@ export const ReviewerPanel = () => {
                             <FileText className="h-4 w-4" />
                           </Button>
                         )}
-                        {!interview.hasVideo && !interview.hasResultSheet && (
-                          <span className="text-xs text-muted-foreground">No files</span>
+                        {!interview.hasResultSheet && (
+                          <span className="text-xs text-muted-foreground">No report</span>
                         )}
                       </div>
                     </TableCell>
